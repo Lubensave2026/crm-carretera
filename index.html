@@ -1,0 +1,952 @@
+<!doctype html><html lang="es"><head><title>CRM Lube N Save CAES</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="theme-color" content="#141414"><meta name="application-name" content="CRM Lube N Save CAES"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CRM CAES"><meta name="apple-mobile-web-app-status-bar-style" content="black"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Archivo+Narrow:wght@600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: barra negra de marca + pestañas (Hoy · Cartera · Caso · Importar · Semana); cada pestaña es una pantalla del sistema */
+:root{
+  --ink:#141414; --paper:#ffffff; --bg:#f3f3f1; --muted:#6a6a6a; --line:#e0e0dc; --yellow:#FFE500; --yellow-soft:#FFF7B3;
+  --red:#c11800; --red-bg:#fde8e4; --amber:#8a6d00; --amber-bg:#fff4c7; --green:#1f7a3a; --green-bg:#e2f3e7;
+  --display:"Archivo Narrow","Arial Narrow",Arial,sans-serif; --body:"Archivo",system-ui,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#f2f2ee; --paper:#1c1c1c; --bg:#111; --muted:#a0a09a; --line:#333; --yellow:#FFE500; --yellow-soft:#3a3500;
+  --red:#ff7a66; --red-bg:#3a1712; --amber:#f0c84a; --amber-bg:#352c08; --green:#5fd081; --green-bg:#143221; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#f2f2ee; --paper:#1c1c1c; --bg:#111; --muted:#a0a09a; --line:#333; --yellow:#FFE500; --yellow-soft:#3a3500;
+  --red:#ff7a66; --red-bg:#3a1712; --amber:#f0c84a; --amber-bg:#352c08; --green:#5fd081; --green-bg:#143221; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.45}
+.top{background:#141414;color:#fff;padding-inline:16px}
+.top .in{max-width:1180px;margin:0 auto;padding-block:14px 0;display:flex;flex-direction:column;gap:10px}
+.brandrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.logo{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.04em}
+.logo b{background:#FFE500;color:#141414;padding:0 6px;margin-right:6px}
+.who{font-size:12.5px;color:#bdbdbd}
+.who span{color:#141414;background:#FFE500;font-weight:600;padding:2px 8px;border-radius:3px;margin-left:6px}
+nav{display:flex;gap:2px;overflow-x:auto}
+nav button{background:transparent;border:0;color:#a8a8a8;font:600 14px var(--body);padding:10px 16px;cursor:pointer;border-top:3px solid transparent;white-space:nowrap}
+nav button[aria-selected="true"]{background:#FFE500;color:#141414;border-top-color:#FFE500}
+.ban{background:var(--yellow-soft);color:var(--ink);font-size:12.5px;padding:8px 16px;text-align:center}
+main{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:22px 60px}
+section.scr{display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-size:clamp(26px,4vw,34px);margin:0;line-height:1.05;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;margin:0}
+.lead{color:var(--muted);margin:4px 0 0;max-width:70ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.k{background:var(--paper);padding:14px 16px;min-width:0}
+.k .l{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.k .v{font-family:var(--mono);font-size:21px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.k .n{font-size:12px;color:var(--muted)}
+.k.hl{background:var(--yellow);color:#141414}.k.hl .l,.k.hl .n{color:#3a3a3a}
+.card{background:var(--paper);border:1px solid var(--line);display:grid;grid-template-columns:6px 1fr;min-width:0}
+.st.rojo{background:var(--red)}.st.amarillo{background:#e0b400}.st.verde{background:var(--green)}
+.cb{padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;align-items:baseline}
+.nm{font-weight:600;font-size:16px}.sm{color:var(--muted);font-size:13px}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:2px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.chip.y{background:var(--yellow);color:#141414;border-color:var(--yellow);font-weight:600}
+.chip.r{background:var(--red-bg);color:var(--red);border-color:transparent}
+.chip.a{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.chip.g{background:var(--green-bg);color:var(--green);border-color:transparent}
+.msg{background:var(--bg);border-left:3px solid var(--yellow);padding:10px 12px;font-size:13.5px}
+.acts{display:flex;flex-wrap:wrap;gap:6px}
+.btn{border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:600 13px var(--body);padding:6px 12px;cursor:pointer}
+.btn.k1{background:#141414;color:#FFE500;border-color:#141414}
+.btn:focus-visible,nav button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px}
+.panel{background:var(--paper);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:9px 12px;border-bottom:2px solid var(--ink);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n{font-family:var(--mono);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tl{display:flex;flex-direction:column;gap:0}
+.tl div{display:grid;grid-template-columns:70px 90px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.step{background:var(--paper);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:6px}
+.step .num{font-family:var(--display);font-size:28px;line-height:1;color:var(--muted)}
+.drop{border:2px dashed var(--ink);background:var(--paper);padding:22px;text-align:center}
+.bar{height:22px;background:var(--bg);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:#141414}
+.bar i.y{background:var(--yellow)}
+.fun{display:grid;grid-template-columns:150px 1fr 120px;gap:10px;align-items:center;font-size:13px}
+.note{font-size:12.5px;color:var(--muted)}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}.fun{grid-template-columns:110px 1fr 90px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+[hidden]{display:none!important}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar select,.toolbar input{border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 10px;font:inherit}
+.empty{background:var(--paper);border:1px dashed var(--line);padding:26px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow:auto;z-index:20}
+.dlg{background:var(--paper);color:var(--ink);width:100%;max-width:520px;padding:18px;display:flex;flex-direction:column;gap:12px;margin-top:max(24px,env(safe-area-inset-top,0px))}
+.dlg label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.dlg input,.dlg select,.dlg textarea{font:15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:8px 10px;text-transform:none;letter-spacing:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:#141414;color:#FFE500;padding:10px 16px;font-weight:600;z-index:30;max-width:calc(100% - 32px)}
+.drop.over{background:var(--yellow-soft)}
+.cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.cfg label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.cfg input,.cfg select{font:15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:7px 9px}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--yellow-soft)}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border:1px solid var(--line);white-space:nowrap}
+.pill.Recuperado{background:#141414;color:#FFE500;border-color:#141414}
+.pill.En.negociación,.pill.Negociacion{background:var(--yellow);color:#141414;border-color:var(--yellow)}
+.pill.Perdido{color:var(--muted)}
+.pill.EnTaller{background:var(--green-bg);color:var(--green);border-color:transparent}
+.done{opacity:.55}
+.sem3{display:flex;gap:4px}
+.sem3 button{border:1px solid var(--line);background:var(--paper);color:var(--ink);font:600 12px var(--body);padding:4px 8px;cursor:pointer}
+.sem3 button[aria-pressed="true"].rojo{background:var(--red);color:#fff;border-color:var(--red)}
+.sem3 button[aria-pressed="true"].amarillo{background:#e0b400;color:#141414;border-color:#e0b400}
+.sem3 button[aria-pressed="true"].verde{background:var(--green);color:#fff;border-color:var(--green)}
+</style>
+
+<div class="top"><div class="in">
+  <div class="brandrow">
+    <div class="logo"><b>LNS</b>CRM · Recuperación de presupuestos</div>
+    <div class="who"><span id="hoyFecha">Lube N Save CAES</span><div id="quien"></div></div>
+  </div>
+  <nav role="tablist" aria-label="Pantallas">
+    <button role="tab" aria-selected="true" data-t="hoy">Hoy</button>
+    <button role="tab" aria-selected="false" data-t="cartera">Cartera</button>
+    <button role="tab" aria-selected="false" data-t="caso">Caso</button>
+    <button role="tab" aria-selected="false" data-t="importar">Importar Clear Mechanic</button>
+    <button role="tab" aria-selected="false" data-t="semana">Semana</button>
+    <button role="tab" aria-selected="false" data-t="manual">Manual de usuario<i class="dot" id="manDot" hidden></i></button>
+  </nav>
+</div></div>
+<div class="ban" id="ban">Conectando con Firebase…</div>
+<div class="ban nov" id="nov" hidden></div>
+
+<main>
+<section class="scr" id="hoy"></section>
+<section class="scr" id="cartera" hidden></section>
+<section class="scr" id="caso" hidden></section>
+<section class="scr" id="importar" hidden>
+  <div><h1>Importar desde Clear Mechanic</h1><p class="lead"><b>Carga semanal, cada lunes:</b> descarga en Clear Mechanic el “Reporte de Actividad – Cotizaciones” de los <b>últimos 30 días</b>, junto con el de <b>Formas de Inspección</b> (trae el enlace de fotos y videos de cada orden), y súbelos aquí. El sistema crea los casos nuevos, actualiza los existentes y detecta lo que el cliente aprobó después. Nunca duplica, así que no importa que las fechas se traslapen. Cada 3 meses puedes subir el trimestre completo como barrida.</p></div>
+  <label class="drop" id="drop" for="file"><b>Arrastra aquí los Excel de Clear Mechanic o haz clic para buscarlos</b><br><span class="sm">Los dos reportes a la vez o uno por uno: “…Reporte de Actividad - Cotizaciones…xlsx” y “…Reporte de Actividad - Formas de Inspeccion…xlsx”. El sistema reconoce cuál es cuál.</span></label>
+  <input type="file" id="file" accept=".xlsx,.xls,.csv" multiple hidden>
+  <div class="sm" id="impUlt"></div>
+  <div id="impRes"></div>
+  <div class="panel">
+    <h2>Cómo cruza la información</h2>
+    <p class="sm"><b>Clave única:</b> número de OT + punto de inspección. Si la partida ya existe, se actualiza; nunca se duplica.</p>
+    <p class="sm"><b>Rechazado o Pendiente con precio</b> → entra a la cartera con fecha para los seguimientos de 48 h, 7 días y 30 días.</p>
+    <p class="sm"><b>Pasó a Aprobado</b> en una carga posterior → se marca como recuperado automáticamente y suma al monto recuperado.</p>
+    <p class="sm"><b>Formas de Inspección</b> → asigna a cada orden su enlace de fotos y videos (columna “Orden digital”). Se puede cargar antes o después de las cotizaciones; el enlace aparece en el caso y en el mensaje de WhatsApp.</p>
+    <p class="sm"><b>Partidas sin precio</b> → se reportan como avisos de calidad para corregir en Clear Mechanic.</p>
+  </div>
+</section>
+<section class="scr" id="semana" hidden></section>
+<section class="scr" id="manual" hidden></section>
+</main>
+
+<div class="ov" id="ov" hidden><div class="dlg" id="dlg"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<style>
+.login{position:fixed;inset:0;background:#141414;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.login .box{background:var(--paper);color:var(--ink);width:100%;max-width:380px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.login .logo{color:#fff;background:#141414;padding:12px 14px;margin:-22px -22px 4px;font-size:18px;border-bottom:4px solid #FFE500}
+.login #lgo{width:100%}
+.login .users{display:flex;flex-wrap:wrap;gap:6px}
+.login .users button{flex:1 1 90px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:600 14px var(--body);padding:10px;cursor:pointer}
+.login .users button[aria-pressed="true"]{background:#141414;color:#FFE500}
+.login input{font:22px var(--mono);letter-spacing:.3em;text-align:center;padding:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.login .loginlogo{align-self:center;border-radius:14px;margin:2px 0 -2px}
+.login .err{color:var(--red);font-size:13px;min-height:18px}
+.ban.err{background:var(--red-bg);color:var(--red)}
+.who{display:flex;gap:8px;align-items:center}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFE500;margin-left:7px;vertical-align:middle}
+.ban.nov{background:var(--yellow);color:#141414;font-weight:600}
+.ban.nov .btn{margin-left:6px;padding:3px 10px}
+.man h2{margin-top:2px}.man p,.man li{max-width:78ch}.man ul,.man ol{margin:4px 0 4px 18px;padding:0}.man li{margin:3px 0}
+.man .toc{display:flex;flex-wrap:wrap;gap:6px}
+.nvd{border-left:4px solid var(--line);padding:6px 12px;margin:6px 0;background:var(--bg)}
+.nvd.nuevo{border-left-color:var(--yellow);background:var(--yellow-soft)}
+.nvd b{display:block}.nvd .f{font-size:12px;color:var(--muted)}
+@media print{.top,.ban,#nov,.toast,.login,.ov,#manPrint,.man .toc{display:none!important}section.scr:not(#manual){display:none!important}body{background:#fff}.panel{border:0;padding:6px 0}}
+.who button{background:transparent;border:1px solid #555;color:#ddd;font:600 12px var(--body);padding:2px 8px;cursor:pointer}
+</style>
+<div class="login" id="login"><div class="box">
+  <div class="logo"><b>LNS</b>CRM · Recuperación de presupuestos</div>
+  <img src="icons/logo-login.png" alt="Lube N Save" width="84" height="84" class="loginlogo">
+  <div id="loginBody"><p class="sm">Conectando…</p></div>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {initializeFirestore,collection,doc,onSnapshot,setDoc,updateDoc,getDoc,getDocs,writeBatch,runTransaction,arrayUnion,arrayRemove,FieldPath,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* La configuración web de Firebase es pública por diseño; la seguridad la dan las reglas de Firestore. */
+const FB_CFG={"apiKey":"AIzaSyCNTGsks9Ii-Q_ZL00jMgAT5ATq66mgAtQ","authDomain":"crm-lns-carretera.firebaseapp.com","projectId":"crm-lns-carretera","storageBucket":"crm-lns-carretera.firebasestorage.app","messagingSenderId":"877599656555","appId":"1:877599656555:web:e7ea5577413973e0503f2e"};
+const app=initializeApp(FB_CFG),auth=getAuth(app),db=initializeFirestore(app,{ignoreUndefinedProperties:true});
+
+const DEF_CFG={min:2,max:5,meta:60000,pct1:1,pct2:2,base:'total',asesor:'Edson'};
+let S={casos:{},agenda:{},cfg:{...DEF_CFG},imports:[],enlaces:{},enlUlt:null,cierres:[]};
+let USER=null,US=[];const ready={casos:false,agenda:false,cfg:false,enl:false};
+const gtToday=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Guatemala'});
+let TODAY=gtToday();
+const iso=()=>new Date().toISOString();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pref=(k,v)=>{try{if(v===undefined)return localStorage.getItem('lns_crm_carretera_'+k);localStorage.setItem('lns_crm_carretera_'+k,v)}catch(e){return null}};
+const sess=(k,v)=>{try{if(v===undefined)return sessionStorage.getItem('lns_crm_carretera_'+k);if(v===null)sessionStorage.removeItem('lns_crm_carretera_'+k);else sessionStorage.setItem('lns_crm_carretera_'+k,v)}catch(e){return null}};
+
+/*@PURA-INICIO  (lógica sin DOM ni Firebase; tests/ la ejecuta tal cual)*/
+const Q=n=>'Q'+Math.round(n||0).toLocaleString('es-GT');
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const daysBetween=(a,b)=>Math.round((Date.UTC(...b.split('-').map((x,i)=>i==1?x-1:+x))-Date.UTC(...a.split('-').map((x,i)=>i==1?x-1:+x)))/864e5);
+const addDays=(d,n)=>{const [y,m,dd]=d.split('-').map(Number);return ymd(new Date(y,m-1,dd+n))};
+const CERRADOS=['Recuperado','Perdido','En taller'];
+const abierto=c=>!CERRADOS.includes(c.estado);
+const STAGES=[{k:'s48',d:2,l:'48 h'},{k:'s7',d:7,l:'7 días'},{k:'s30',d:30,l:'30 días'}];
+const URG={rojo:3,amarillo:2,verde:1};
+const ROJO_KW=/fren|pastill|disco|fuga|direcc|cremaller|bolsa de aire|airbag|llanta|bomba de agua|radiador|faja|banda|tiempo|suspens|amortig|rotula|r[oó]tula|terminal|muleta/i;
+/* Llave segura del mapa "partidas": Firestore interpreta . / ~ * [ ] ` como rutas */
+const pk=p=>String(p||'').replace(/[.\/~*\[\]`]/g,'_').trim()||'_';
+const otId=o=>String(o).replace(/\.0$/,'').trim().replace(/[^\w\-]/g,'-');
+
+function pendientes(c){return Object.values(c.partidas).filter(p=>p.total>0&&!p.recuperada&&p.estadoCM!=='Aprobado')}
+function parcialQ(c,k){return (c.recuperos||[]).filter(r=>r.tipo==='parcial').reduce((a,r)=>a+(r[k]||0),0)}
+function montoCaso(c){return Math.max(0,pendientes(c).reduce((a,p)=>a+p.total,0)-parcialQ(c,'monto'))}
+function moCaso(c){return Math.max(0,pendientes(c).reduce((a,p)=>a+p.mo,0)-parcialQ(c,'mo'))}
+function dias(c){return daysBetween(c.fecha,TODAY)}
+function dueStage(c){if(!abierto(c)||c.estado==='Reprogramado')return null;const d=dias(c);let s=null;for(const st of STAGES)if(d>=st.d&&!(c.seg||{})[st.k])s=st;return s}
+function score(c){const d=dias(c);const f=d<=7?1.2:d<=30?1:d<=60?.8:.6;return montoCaso(c)/1000*URG[c.sem||'amarillo']*f}
+
+/* Agenda: reprogramados vencidos y seguimientos vencidos primero; después por puntaje. "hechos" = casos ya registrados hoy (se conservan al rehacer). */
+function computeAgenda(casos,cfg,hechos){
+  hechos=(hechos||[]).filter(o=>casos[o]);
+  const open=Object.values(casos).filter(c=>abierto(c)&&montoCaso(c)>0&&!hechos.includes(c.ot));
+  const repro=open.filter(c=>c.estado==='Reprogramado'&&c.proximo&&c.proximo<=TODAY);
+  const due=open.filter(c=>c.estado!=='Reprogramado'&&dueStage(c)).sort((a,b)=>score(b)-score(a));
+  const rest=open.filter(c=>c.estado!=='Reprogramado'&&!dueStage(c)&&(!c.proximo||c.proximo<=TODAY)).sort((a,b)=>score(b)-score(a));
+  const prio=[...repro,...due];
+  const n=Math.min(cfg.max,Math.max(cfg.min,prio.length));
+  return [...hechos,...[...prio,...rest].slice(0,Math.max(0,n-hechos.length)).map(c=>c.ot)];
+}
+
+/* ---- Importación de Clear Mechanic ---- */
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'')}
+const COLS={ot:['or','ot','orden'],fecha:['fechahora','fechahoradeaperturadeorden','fecha'],nombre:['nombre'],apellido:['apellido'],movil:['movil','telefono','celular'],marca:['marca'],modelo:['modelo'],anio:['ano','anio'],km:['kilometraje','km'],placa:['placas','placa'],tipo:['tipo'],punto:['puntodeinspeccion'],partes:['cotpartes'],mo:['cotizacionmo'],total:['cotizaciontotal'],estado:['aprobadoorechazado']};
+/* Devuelve el plan de escrituras sin tocar nada: {error} o {stats, nuevos:[{ot,doc}], cambios:[{ot,patch}]} */
+function planImport(rows,casos,o){
+  o=o||{};const usuario=o.usuario||'',ahora=o.ahora||Date.now(),HOY=o.hoy||TODAY;
+  const head=rows[0].map(norm),idx={};
+  for(const k in COLS)idx[k]=head.findIndex(h=>COLS[k].includes(h));
+  const faltan=['ot','punto','total','estado','tipo','fecha'].filter(k=>idx[k]<0);
+  if(faltan.length)return {error:faltan};
+  const g=(r,k)=>idx[k]>=0?r[idx[k]]:'';
+  let filas=0,partidasN=0,recup=0,recupQ=0,avisos=0,seq=0;
+  const W={},cotiz={};
+  const log=(w,canal,resultado,nota)=>{const e={fecha:HOY,canal,resultado,nota:nota||'',usuario,ts:ahora+(seq++)};w.c.bitacora.push(e);w.logs.push(e)};
+  for(const r of rows.slice(1)){
+    if(!r||!g(r,'ot'))continue;filas++;
+    const ot=otId(g(r,'ot')),tipo=String(g(r,'tipo')).trim(),punto=String(g(r,'punto')||'').trim(),key=pk(punto);
+    const est=String(g(r,'estado')||'');const estCM=/aprob/i.test(est)?'Aprobado':/rechaz/i.test(est)?'Rechazado':'Pendiente';
+    let f=g(r,'fecha');f=f instanceof Date?ymd(f):(typeof f==='number'&&f>20000)?new Date(Math.round((f-25569)*864e5)).toISOString().slice(0,10):String(f).slice(0,10);
+    if(/^punto/i.test(tipo)){cotiz[ot+'|'+punto]=cotiz[ot+'|'+punto]||{estCM,sin:true};continue}
+    if(!/total/i.test(tipo))continue;
+    partidasN++;cotiz[ot+'|'+punto]={estCM,sin:false};
+    const total=+g(r,'total')||0,mo=+g(r,'mo')||0;
+    let w=W[ot];
+    if(!w){const ex=casos[ot];
+      w=W[ot]={nuevo:!ex,tocadas:new Set(),recs:[],logs:[],c:ex?structuredClone(ex):{ot,
+        cliente:(String(g(r,'nombre')).trim()+' '+String(g(r,'apellido')).trim()).trim(),movil:String(g(r,'movil')||'').trim(),
+        vehiculo:[g(r,'marca'),g(r,'modelo'),g(r,'anio')].filter(Boolean).join(' '),placa:String(g(r,'placa')||''),km:g(r,'km')?String(Math.round(+g(r,'km'))):'',
+        fecha:f,partidas:{},seg:{},bitacora:[],recuperos:[],estado:'Pendiente',sem:'amarillo',proximo:null,motivo:''}}}
+    const c=w.c;
+    if(f>c.fecha)c.fecha=f;
+    const prev=c.partidas[key];let rec=prev?.recuperada||false;
+    if(prev&&prev.estadoCM!=='Aprobado'&&estCM==='Aprobado'&&!prev.recuperada&&!w.nuevo){
+      rec=true;recup++;recupQ+=prev.total;
+      const rc={fecha:HOY,monto:prev.total,mo:prev.mo,tipo:'clear-mechanic',usuario};c.recuperos.push(rc);w.recs.push(rc);
+      log(w,'Clear Mechanic','Aprobado detectado en importación',punto+' · '+Q(prev.total));}
+    c.partidas[key]={punto,total,mo,estadoCM:estCM,fechaCM:f,recuperada:rec};w.tocadas.add(key);
+  }
+  for(const k in cotiz)if(cotiz[k].sin&&cotiz[k].estCM!=='Pendiente')avisos++;
+  const nuevos=[],cambios=[];let nNuevos=0,nAct=0;
+  for(const ot in W){const w=W[ot],c=w.c;
+    if(w.nuevo){
+      if(montoCaso(c)>0){nNuevos++;
+        c.sem=Object.values(c.partidas).some(p=>p.estadoCM!=='Aprobado'&&ROJO_KW.test(p.punto))?'rojo':'amarillo';
+        c.estado=pendientes(c).every(p=>p.estadoCM==='Rechazado')?'Rechazado':'Pendiente';
+        log(w,'Clear Mechanic','Caso creado desde importación',Q(montoCaso(c))+' pendiente');
+        c.actualizado=new Date(ahora).toISOString();c.actualizadoPor=usuario;nuevos.push({ot,doc:c})}
+    }else{
+      nAct++;const ex=casos[ot],patch={};const pt={};
+      for(const k of w.tocadas){const a=ex.partidas[k],b=c.partidas[k];if(!a||['total','mo','estadoCM','fechaCM','recuperada'].some(x=>a[x]!==b[x]))pt[k]=b}
+      if(Object.keys(pt).length)patch.partidas=pt;
+      if(c.fecha!==ex.fecha)patch.fecha=c.fecha;
+      if(abierto(c)&&montoCaso(c)===0){patch.estado='Recuperado';log(w,'Clear Mechanic','Todas las partidas aprobadas')}
+      if(w.recs.length)patch.recuperos=w.recs;
+      if(w.logs.length)patch.bitacora=w.logs;
+      if(Object.keys(patch).length)cambios.push({ot,patch});
+    }
+  }
+  return {stats:{filas,ordenes:Object.keys(W).length,partidas:partidasN,nuevos:nNuevos,actualizados:nAct,recuperados:recup,montoRecuperado:recupQ,avisos},nuevos,cambios};
+}
+
+/* ---- Respaldo en Excel: filas por hoja (incluye casos cerrados) ---- */
+const SEMAF={rojo:'Crítico',amarillo:'Preventivo',verde:'Vigilar'};
+const r2=n=>Math.round((n||0)*100)/100;
+function filasRespaldo(casos,enlaces){
+  const cs=Object.values(casos).sort((a,b)=>String(a.ot).localeCompare(String(b.ot),'es',{numeric:true}));
+  const H={Cartera:[],Partidas:[],'Bitácora':[],Recuperos:[]};
+  for(const c of cs){
+    const sg=c.seg||{};
+    H.Cartera.push({OT:c.ot,Cliente:c.cliente,'Móvil':c.movil,'Vehículo':c.vehiculo,Placa:c.placa,'Enlace de inspección':(enlaces||{})[c.ot]||'',Km:c.km?+c.km:'','Fecha cotización':c.fecha,'Días':dias(c),Urgencia:SEMAF[c.sem]||'',Estado:c.estado,'Próximo contacto':c.proximo||'','Motivo de pérdida':c.motivo||'','Pendiente Q':r2(montoCaso(c)),'M.O. pendiente Q':r2(moCaso(c)),'Descuento Q':r2(c.descuento||0),'Seg. 48 h':sg.s48?'Sí':'No','Seg. 7 d':sg.s7?'Sí':'No','Seg. 30 d':sg.s30?'Sí':'No','Actualizado por':c.actualizadoPor||'','Actualizado':c.actualizado||''});
+    for(const p of Object.values(c.partidas))H.Partidas.push({OT:c.ot,Cliente:c.cliente,'Punto de inspección':p.punto,'Estado Clear Mechanic':p.estadoCM,'Recuperada':p.recuperada?'Sí':'No','M.O. Q':r2(p.mo),'Total Q':r2(p.total),'Fecha CM':p.fechaCM||''});
+    for(const b of [...(c.bitacora||[])].sort((a,b)=>(a.ts||0)-(b.ts||0)))H['Bitácora'].push({Fecha:b.fecha,OT:c.ot,Cliente:c.cliente,Canal:b.canal,Resultado:b.resultado,Nota:b.nota||'',Usuario:b.usuario||''});
+    for(const r of (c.recuperos||[]))H.Recuperos.push({Fecha:r.fecha,OT:c.ot,Cliente:c.cliente,'Monto Q':r2(r.monto),'M.O. Q':r2(r.mo),Tipo:r.tipo,Usuario:r.usuario||''});
+  }
+  H['Bitácora'].sort((a,b)=>String(a.Fecha).localeCompare(String(b.Fecha)));H.Recuperos.sort((a,b)=>String(a.Fecha).localeCompare(String(b.Fecha)));
+  return H;
+}
+const pl=(n,u,v)=>n+' '+(n===1?u:v);
+
+/* ---- Reporte "Formas de Inspección": enlace (Orden digital) por OT ---- */
+function tipoReporte(rows){const h=(rows[0]||[]).map(norm);return h.includes('ordendigital')?'enlaces':(h.includes('puntodeinspeccion')&&h.includes('cotizaciontotal'))?'cotizaciones':null}
+function planEnlaces(rows,actuales){
+  const head=rows[0].map(norm),iOt=head.findIndex(h=>COLS.ot.includes(h)),iUrl=head.indexOf('ordendigital');
+  if(iOt<0||iUrl<0)return {error:[iOt<0?'OR #':null,iUrl<0?'Orden digital':null].filter(Boolean)};
+  let filas=0,invalidos=0;const cambios={};
+  for(const r of rows.slice(1)){
+    if(!r||!r[iOt])continue;filas++;
+    const ot=otId(r[iOt]),u=String(r[iUrl]||'').trim();
+    if(!/^https:\/\/[^\s"'<>]+$/.test(u)){invalidos++;continue}
+    if(actuales[ot]!==u)cambios[ot]=u;
+  }
+  const ks=Object.keys(cambios),nuevos=ks.filter(k=>!actuales[k]).length;
+  return {stats:{filas,nuevos,actualizados:ks.length-nuevos,iguales:filas-invalidos-ks.length,invalidos},cambios};
+}
+
+/* ---- Cierre mensual ---- */
+const MESES_L=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const mesTxt=m=>MESES_L[+m.slice(5)-1]+' '+m.slice(0,4);
+function listaMeses(hoy,n){const [y,m]=hoy.split('-').map(Number);return Array.from({length:n},(_,i)=>{const d=new Date(y,m-1-i,1);return d.getFullYear()+'-'+pad(d.getMonth()+1)})}
+function incentivoCalc(base,cfg){const t1=Math.min(base,cfg.meta)*cfg.pct1/100,t2=Math.max(0,base-cfg.meta)*cfg.pct2/100;return t1+t2}
+/* Lo recuperado, autorizado y contactado en un mes ("AAAA-MM") */
+function calcMes(casos,cfg,mes){
+  let recuperado=0,recuperadoMO=0,autorizados=0,contactos=0,carteraAbierta=0;
+  for(const c of Object.values(casos)){
+    for(const r of (c.recuperos||[]))if(String(r.fecha).startsWith(mes)){recuperado+=r.monto||0;recuperadoMO+=r.mo||0;autorizados++}
+    for(const b of (c.bitacora||[]))if(String(b.fecha).startsWith(mes)&&b.canal!=='Clear Mechanic'&&b.canal!=='Sistema')contactos++;
+    if(abierto(c))carteraAbierta+=montoCaso(c);
+  }
+  const baseIncentivo=cfg.base==='mo'?recuperadoMO:recuperado;
+  return {recuperado:r2(recuperado),recuperadoMO:r2(recuperadoMO),autorizados,contactos,carteraAbierta:r2(carteraAbierta),baseIncentivo:r2(baseIncentivo),incentivo:r2(incentivoCalc(baseIncentivo,cfg))};
+}
+
+/* ---- Pendientes de días anteriores: casos que estuvieron en una agenda pasada y nadie contactó después ---- */
+function pendientesAnteriores(casos,agendas,hoy,diasMax){
+  diasMax=diasMax||14;const deHoy=new Set(agendas[hoy]||[]),res={};
+  for(const d of Object.keys(agendas).sort()){
+    if(d>=hoy||daysBetween(d,hoy)>diasMax)continue;
+    for(const ot of agendas[d]){
+      const c=casos[ot];
+      if(!c||deHoy.has(ot)||!abierto(c)||montoCaso(c)<=0||(c.proximo&&c.proximo>hoy))continue;
+      if((c.bitacora||[]).some(b=>String(b.fecha)>=d&&b.canal!=='Clear Mechanic'&&b.canal!=='Sistema'))continue;
+      if(!res[ot])res[ot]=d;
+    }
+  }
+  return Object.entries(res).map(([ot,d])=>({c:casos[ot],dia:d})).sort((a,b)=>a.dia.localeCompare(b.dia)||score(b.c)-score(a.c));
+}
+/*@PURA-FIN*/
+
+/* ================= DATOS EN LA NUBE ================= */
+const unsubs=[];let agBusy=false;
+const caso=c=>({...c,partidas:c.partidas||{},seg:c.seg||{},bitacora:c.bitacora||[],recuperos:c.recuperos||[]});
+function syncErr(e){const b=$('#ban');b.className='ban err';b.textContent='Sin acceso a los datos ('+(e.code||e.message)+'). Revisa la conexión o las reglas de Firebase.'}
+function startSync(){
+  unsubs.push(onSnapshot(collection(db,'crm_casos'),{includeMetadataChanges:true},snap=>{
+    let ch=false;snap.docChanges().forEach(d=>{ch=true;if(d.type==='removed')delete S.casos[d.doc.id];else S.casos[d.doc.id]=caso(d.doc.data())});
+    const fresh=!snap.metadata.fromCache;if(fresh&&!ready.casos){ready.casos=true;ch=true}
+    if(ch){scheduleRender();ensureAgenda()}
+  },syncErr));
+  unsubs.push(onSnapshot(collection(db,'crm_agenda'),snap=>{
+    snap.docChanges().forEach(d=>{if(d.type==='removed')delete S.agenda[d.doc.id];else S.agenda[d.doc.id]=d.doc.data().ots||[]});
+    ready.agenda=true;scheduleRender();ensureAgenda()},syncErr));
+  unsubs.push(onSnapshot(query(collection(db,'crm_cierres'),orderBy('mes','desc')),snap=>{S.cierres=snap.docs.map(d=>d.data());scheduleRender()},syncErr));
+  unsubs.push(onSnapshot(doc(db,'crm_enlaces','carretera'),s=>{const d=s.exists()?s.data():{};S.enlaces=d.urls||{};S.enlUlt=d.ultima||null;ready.enl=true;scheduleRender()},syncErr));
+  unsubs.push(onSnapshot(doc(db,'crm_config','carretera'),s=>{S.cfg={...DEF_CFG,...(s.exists()?s.data():{})};ready.cfg=true;scheduleRender()},syncErr));
+  unsubs.push(onSnapshot(query(collection(db,'crm_importaciones'),orderBy('creada','desc'),limit(10)),snap=>{S.imports=snap.docs.map(d=>d.data());scheduleRender()},syncErr));
+}
+function stopSync(){unsubs.splice(0).forEach(u=>u());S={casos:{},agenda:{},cfg:{...DEF_CFG},imports:[],enlaces:{},enlUlt:null,cierres:[]};ready.casos=ready.agenda=ready.cfg=ready.enl=false}
+
+const canAct=()=>USER&&USER.rol!=='consulta';
+const isJefe=()=>USER&&USER.rol==='jefe';
+
+async function ensureAgenda(){
+  if(!USER||agBusy||!canAct()||!ready.casos||!ready.agenda||S.agenda[TODAY]||!Object.keys(S.casos).length)return;
+  agBusy=true;
+  try{await runTransaction(db,async tx=>{const r=doc(db,'crm_agenda',TODAY);const s=await tx.get(r);if(s.exists())return;
+    tx.set(r,{ots:computeAgenda(S.casos,S.cfg),creadaPor:USER.nombre,creada:iso()})})}
+  catch(e){toast('No se pudo armar la agenda: '+(e.code||e.message))}
+  finally{agBusy=false}
+}
+async function rehacerAgenda(){
+  const hechos=(S.agenda[TODAY]||[]).filter(o=>S.casos[o]&&(S.casos[o].resHoy||'').startsWith(TODAY));
+  try{await setDoc(doc(db,'crm_agenda',TODAY),{ots:computeAgenda(S.casos,S.cfg,hechos),creadaPor:USER.nombre,creada:iso(),rehecha:true})}
+  catch(e){toast('No se pudo rehacer la agenda: '+(e.code||e.message))}
+}
+
+/* ================= MENSAJES ================= */
+const first=n=>(n||'').split(' ')[0];
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const fmtD=d=>{if(!d)return '—';const [y,m,dd]=d.split('-');return +dd+' '+MES[m-1]};
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,3200)}
+function topItems(c,n=2){return pendientes(c).sort((a,b)=>b.total-a.total).slice(0,n)}
+const enlaceDe=c=>{const u=S.enlaces[c.ot];return /^https:\/\//.test(u||'')?u:null};
+const verRep=(c,t='Ver reporte',k='btn')=>{const u=enlaceDe(c);return u?`<a class="${k}" href="${esc(u)}" target="_blank" rel="noopener">${t}</a>`:''};
+function mensaje(c){
+  const lk=enlaceDe(c),fo=lk?`. Aquí puede ver las fotos, videos y el detalle de su inspección: ${lk} 📷`:'; le comparto las fotos 📷.',ver=lk?` Aquí puede ver las fotos y el detalle de su inspección: ${lk}`:'';
+  const st=dueStage(c),n=first(c.cliente)||'[Nombre]',it=topItems(c),tit=it.map(p=>{const t=p.punto.toLowerCase().replace(/\s+/g,' ').trim();return t.length>40?t.slice(0,40).replace(/\s\S*$/,'')+'…':t}).join(' y ');
+  const tot=Q(it.reduce((a,p)=>a+p.total,0));
+  if(st&&st.k==='s48')return `Buen día, ${n}. Le saluda ${S.cfg.asesor} de Lube N Save Carretera al Salvador. En la inspección de su ${c.vehiculo} encontramos que necesita atención en ${tit}${fo} Le recomendamos atenderlo pronto para evitar un daño mayor. El presupuesto de esas partidas es de ${tot}, con garantía del taller. ¿Le reservo espacio esta semana?`;
+  if(st&&st.k==='s7')return `${n}, le escribo sobre ${tit} de su ${c.vehiculo}. Si le parece, podemos hacer primero lo más urgente (${tot}) y dejar el resto para su próximo servicio. ¿Qué día le queda mejor?${ver}`;
+  if(st&&st.k==='s30')return `Hola, ${n}. Solo para recordarle que en la última visita de su ${c.vehiculo} quedó pendiente ${tit}. Cuando guste se lo programamos; recuerde que entregamos todos los vehículos con car wash de cortesía. 🚗${ver}`;
+  return `Hola, ${n}. Le saluda ${S.cfg.asesor} de Lube N Save Carretera al Salvador. Le escribo por lo que quedó pendiente en su ${c.vehiculo}: ${tit}. Tenemos espacio esta semana y le mantenemos el presupuesto de ${tot}. ¿Le agendo?${ver}`;
+}
+function wa(c){const d=(c.movil||'').replace(/\D/g,'');if(d.length<8)return null;return 'https://wa.me/'+(d.length===8?'502'+d:d)+'?text='+encodeURIComponent(mensaje(c))}
+
+/* ================= ACCIONES (escrituras por documento) ================= */
+const ref=ot=>doc(db,'crm_casos',ot);
+const ent=(canal,resultado,nota)=>({fecha:TODAY,canal,resultado,nota:nota||'',usuario:USER.nombre,ts:Date.now()});
+const stagePairs=c=>{const st=dueStage(c),p=[];if(st)for(const s of STAGES){p.push('seg.'+s.k,true);if(s===st)break}return p};
+async function wr(ot,pairs){
+  try{await updateDoc(ref(ot),...pairs,'actualizado',iso(),'actualizadoPor',USER.nombre);return true}
+  catch(e){toast('No se pudo guardar: '+(e.code||e.message));return false}
+}
+async function agregarAHoy(ot){
+  if(!canAct()||!S.agenda[TODAY]||!S.casos[ot])return;
+  try{await updateDoc(doc(db,'crm_agenda',TODAY),{ots:arrayUnion(ot)});toast('Agregado a la lista de hoy')}catch(e){toast('No se pudo agregar: '+(e.code||e.message))}
+}
+function accion(ot,tipo){
+  const c=S.casos[ot];if(!c||!canAct())return;
+  const hoy=r=>['resHoy',TODAY+'|'+r];
+  if(tipo==='enviado'){const p=[...stagePairs(c),'bitacora',arrayUnion(ent('WhatsApp','Mensaje enviado'))];if(c.estado==='Pendiente'||c.estado==='Rechazado')p.push('estado','Sin respuesta');wr(ot,p).then(k=>k&&toast('Contacto registrado'));return}
+  if(tipo==='sinresp'){wr(ot,[...stagePairs(c),'estado','Sin respuesta','proximo',addDays(TODAY,3),'bitacora',arrayUnion(ent('WhatsApp','Sin respuesta','Reintento en 3 días')),...hoy('Sin respuesta')]).then(k=>k&&toast('Reintento programado en 3 días'));return}
+  if(tipo==='negocia'){wr(ot,[...stagePairs(c),'estado','En negociación','bitacora',arrayUnion(ent('Llamada','En negociación')),...hoy('En negociación')]);return}
+  if(tipo==='descuento'){if(isJefe())dlgDescuento(c);return}
+  if(tipo==='yaaut'){if(isJefe())dlgYaAutorizado(c);return}
+  if(tipo==='autorizoJ'){if(isJefe())dlgAutorizo(c,{correccion:true});return}
+  if(tipo==='marcarRec'){if(isJefe())dlgMarcarRecuperado(c);return}
+  if(tipo==='autorizo')return dlgAutorizo(c);
+  if(tipo==='repro')return dlgRepro(c);
+  if(tipo==='perdido')return dlgPerdido(c);
+  if(tipo==='taller'){wr(ot,['estado','En taller','bitacora',arrayUnion(ent('Sistema','En taller'))]).then(k=>k&&toast('Caso marcado en taller'));return}
+}
+function openDlg(html,onOk){$('#dlg').innerHTML=html+`<div class="acts" style="justify-content:flex-end"><button class="btn" id="dCancel">Cancelar</button><button class="btn k1" id="dOk">Guardar</button></div>`;$('#ov').hidden=false;$('#dCancel').onclick=closeDlg;$('#dOk').onclick=()=>{if(onOk()!==false)closeDlg()};const f=$('#dlg input,#dlg select');f&&f.focus()}
+function closeDlg(){$('#ov').hidden=true}
+function dlgAutorizo(c,opt){
+  const corr=!!(opt&&opt.correccion);
+  const m=montoCaso(c),mo=moCaso(c);
+  openDlg(`<h2>${corr?'Registrar recuperación (corrección del jefe)':'Autorizó'} · OT ${esc(c.ot)}</h2>${corr?`<p class="sm">Estado actual: <b>${esc(c.estado)}</b>. Registra lo que el cliente autorizó para que cuente como recuperado (semana, mes e incentivo). Total cierra el caso como Recuperado; Parcial lo reabre con el resto pendiente.</p>`:''}<p class="sm">${esc(c.cliente)} · pendiente ${Q(m)} (M.O. ${Q(mo)})</p>
+   <label>Tipo<select id="aT"><option value="total">Total</option><option value="parcial">Parcial</option></select></label>
+   <label>Monto autorizado (Q)<input id="aM" type="number" min="0" value="${Math.round(m)}"></label>
+   <label>Mano de obra autorizada (Q)<input id="aMO" type="number" min="0" value="${Math.round(mo)}"></label>
+   <label>Nota<input id="aN" placeholder="Ej.: autorizó frenos, A/C queda pendiente"></label>
+   <p class="note" id="aHint">Total cierra el caso completo. Si el cliente autorizó solo una parte, usa Parcial: el resto sigue en la cartera.</p>`,()=>{
+    let tipo=$('#aT').value;const monto=+$('#aM').value||0,moA=+$('#aMO').value||0,nota=$('#aN').value;
+    if(!monto){toast('Escribe el monto autorizado');return false}
+    if(moA>monto){toast('La mano de obra no puede ser mayor al monto autorizado');return false}
+    if(tipo==='total'&&monto<Math.round(m)){tipo='parcial';toast('El monto es menor al pendiente: se registró como Parcial y el resto sigue en la cartera')}
+    const p=[...stagePairs(c),'recuperos',arrayUnion({fecha:TODAY,monto,mo:moA,tipo,usuario:USER.nombre}),'bitacora',arrayUnion(ent(corr?'Sistema':'WhatsApp',(corr?'Corrección del jefe: autorizado ':'Autorizado ')+tipo,Q(monto)+' · '+nota))];
+    if(!corr)p.push('resHoy',TODAY+'|Autorizado');
+    if(tipo==='total'){p.push('estado','Recuperado');for(const [k,x] of Object.entries(c.partidas))if(x.estadoCM!=='Aprobado')p.push(new FieldPath('partidas',k,'recuperada'),true)}else p.push('estado','En negociación');
+    wr(c.ot,p).then(k=>k&&toast((tipo==='total'?'Recuperado ':'Autorizado parcial ')+Q(monto)+''));});
+  /* El tipo sigue al monto: menos que el pendiente = Parcial; todo el pendiente = Total */
+  const aT=$('#aT'),aM=$('#aM'),aMO=$('#aMO'),hint=$('#aHint'),pend=Math.round(m);
+  let moT=false;aMO.addEventListener('input',()=>{moT=true});
+  const sync=()=>{const v=+aM.value||0;if(v>0&&v<pend){aT.value='parcial';hint.textContent='Monto menor al pendiente: se registra como Parcial y el resto ('+Q(pend-v)+') sigue en la cartera. La mano de obra se propone en proporción; corrígela si conoces el valor exacto.'}else if(v>=pend){aT.value='total';hint.textContent='Cubre todo lo pendiente: el caso se cierra como Recuperado.'}
+    if(!moT&&pend>0&&v>0)aMO.value=Math.round(mo*Math.min(v,pend)/pend)};
+  aM.addEventListener('input',sync);
+  aT.addEventListener('change',()=>{if(aT.value==='total'){aM.value=pend;aMO.value=Math.round(mo);hint.textContent='Cubre todo lo pendiente: el caso se cierra como Recuperado.'}else if((+aM.value||0)>=pend)aM.value='';});
+}
+/* Solo jefe: el cliente autorizó todo pero se facturó con descuento. El monto recuperado no cambia; la diferencia queda como descuento. */
+const baseCotizada=c=>Object.values(c.partidas).filter(p=>p.estadoCM!=='Aprobado').reduce((a,p)=>a+p.total,0);
+const pctDesc=c=>{const b=baseCotizada(c);return b?Math.round((c.descuento||0)/b*100):0};
+/* Solo jefe: el caso ya tiene montos autorizados registrados, pero quedó cerrado como En taller / Perdido; solo cambia el estado a Recuperado. */
+function dlgMarcarRecuperado(c){
+  const rec=(c.recuperos||[]).reduce((a,r)=>a+(r.monto||0),0),pend=montoCaso(c);
+  openDlg(`<h2>Marcar como Recuperado · OT ${esc(c.ot)}</h2>
+   <p class="sm">Estado actual: <b>${esc(c.estado)}</b> · Recuperado registrado: <b>${Q2(rec)}</b>${c.descuento?' · Descuento: <b>'+Q2(c.descuento)+'</b>':''}</p>
+   <p class="sm">Solo cambia el estado del caso a <b>Recuperado</b>. Los montos recuperados ya registrados no se modifican (ya cuentan en la semana, el mes y el incentivo).${pend>0?' <b>Ojo:</b> quedan '+Q2(pend)+' sin registrar como recuperados; si debían contar, usa antes “Registrar recuperación”.':''}</p>
+   <label>Motivo / nota (obligatorio)<input id="eN" placeholder="Ej.: el cliente trajo el vehículo y autorizó el 100%"></label>`,()=>{
+    const nota=$('#eN').value.trim();
+    if(!nota){toast('Escribe el motivo');return false}
+    wr(c.ot,['estado','Recuperado','bitacora',arrayUnion(ent('Sistema','Ajuste del jefe: estado a Recuperado','Antes: '+c.estado+' · '+nota))]).then(k=>k&&toast('Caso marcado como Recuperado'));
+  });
+}
+/* Solo jefe: el cliente ya había autorizado antes y Clear Mechanic no lo tenía marcado; la importación lo contó como recuperado. */
+function dlgYaAutorizado(c){
+  const rs=(c.recuperos||[]).filter(r=>r.tipo==='clear-mechanic'),tot=rs.reduce((a,r)=>a+(r.monto||0),0);
+  if(!rs.length){toast('Este caso no tiene recuperos detectados desde Clear Mechanic');return}
+  openDlg(`<h2>Quitar de lo recuperado · OT ${esc(c.ot)}</h2>
+   <p class="sm">Se quitarán <b>${pl(rs.length,'registro','registros')}</b> detectados desde Clear Mechanic, por <b>${Q2(tot)}</b>, de lo recuperado (semana, mes, incentivo y cartera).</p>
+   <p class="sm">Úsalo cuando el cliente <b>ya había autorizado antes</b> y Clear Mechanic no lo tenía marcado. Las partidas quedan como aprobadas en Clear Mechanic desde el inicio, el caso deja de contar como recuperación y la bitácora conserva el historial. Si el caso estaba como Recuperado, pasa a En taller.</p>
+   <label>Motivo / nota (obligatorio)<input id="yN" placeholder="Ej.: el cliente ya había autorizado antes de la carga inicial"></label>`,()=>{
+    const nota=$('#yN').value.trim();
+    if(!nota){toast('Escribe el motivo');return false}
+    const p=['recuperos',arrayRemove(...rs),'bitacora',arrayUnion(ent('Sistema','Ajuste del jefe: ya estaba autorizado','Se quitaron '+Q2(tot)+' de lo recuperado · '+nota))];
+    for(const [k,x] of Object.entries(c.partidas))if(x.estadoCM==='Aprobado'&&x.recuperada)p.push(new FieldPath('partidas',k,'recuperada'),false);
+    if(c.estado==='Recuperado')p.push('estado','En taller');
+    wr(c.ot,p).then(k=>k&&toast('Listo: '+Q2(tot)+' ya no cuenta como recuperado'));
+  });
+}
+const Q2=n=>'Q'+(Math.round((n||0)*100)/100).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+function dlgDescuento(c){
+  const base=baseCotizada(c),rec=(c.recuperos||[]).reduce((a,r)=>a+(r.monto||0),0),ya=c.descuento||0,tope=Math.max(0,r2(base-rec));
+  openDlg(`<h2>${ya?'Editar descuento':'Ajustar a recuperación total'} · OT ${esc(c.ot)}</h2>
+   <p class="sm">Cotizado (no aprobado en Clear Mechanic): <b>${Q2(base)}</b> · Recuperado registrado: <b>${Q2(rec)}</b>${ya?' · Descuento registrado: <b>'+Q2(ya)+'</b>':''}</p>
+   <p class="sm">Úsalo cuando el cliente autorizó todo pero se facturó con descuento. El monto recuperado <b>no cambia</b>; la diferencia queda como <b>descuento</b> y el caso pasa a 100% recuperado (pendiente Q0). El monto sugerido es la diferencia exacta, con centavos; puedes cambiarlo.</p>
+   <label>Descuento total aplicado (Q)<input id="dM" type="number" min="0" step="0.01" value="${tope}"></label>
+   <label>Motivo / nota (obligatorio)<input id="dN" placeholder="Ej.: 15% de descuento al facturar"></label>`,()=>{
+    const m=r2(+$('#dM').value||0),nota=$('#dN').value.trim();
+    if(m<=0){toast('Escribe el monto del descuento');return false}
+    if(m>tope+1){toast('El descuento no puede ser mayor a la diferencia ('+Q2(tope)+')');return false}
+    if(!nota){toast('Escribe el motivo del descuento');return false}
+    const hayPend=montoCaso(c)>0;
+    if(m===r2(ya)&&!hayPend){toast('El descuento ya está registrado con ese monto');return false}
+    const pc=base?Math.round(m/base*100):0;
+    const p=['descuento',m,'bitacora',arrayUnion(ent('Sistema',ya?'Ajuste del jefe: descuento corregido':'Ajuste del jefe: recuperación total',(ya?'Descuento '+Q2(m)+' ('+pc+'%), antes '+Q2(ya):'Descuento '+Q2(m)+' ('+pc+'%)')+' · '+nota))];
+    for(const [k,x] of Object.entries(c.partidas))if(x.estadoCM!=='Aprobado'&&!x.recuperada)p.push(new FieldPath('partidas',k,'recuperada'),true);
+    if(abierto(c))p.push('estado','Recuperado');
+    wr(c.ot,p).then(k=>k&&toast((ya?'Descuento corregido a ':'Caso ajustado: recuperado al 100% con descuento de ')+Q2(m)));
+  });
+}
+function dlgRepro(c){openDlg(`<h2>Reprogramar · OT ${esc(c.ot)}</h2><label>Próximo contacto<input id="rD" type="date" value="${addDays(TODAY,7)}"></label><label>Nota<input id="rN" placeholder="Ej.: cobra en quincena"></label>`,()=>{const d=$('#rD').value;if(!d){toast('Elige la fecha');return false}
+  wr(c.ot,[...stagePairs(c),'estado','Reprogramado','proximo',d,'bitacora',arrayUnion(ent('WhatsApp','Reprogramado','Para '+fmtD(d)+' · '+$('#rN').value)),'resHoy',TODAY+'|Reprogramado'])})}
+function dlgPerdido(c){openDlg(`<h2>Perdido · OT ${esc(c.ot)}</h2><label>Motivo (obligatorio)<select id="pM"><option value="">Selecciona…</option><option>Precio</option><option>Lo hizo en otro taller</option><option>Ya no tiene el vehículo</option><option>No le interesa por ahora</option><option>No se pudo contactar (3 intentos)</option><option>Otro</option></select></label><label>Nota<input id="pN"></label>`,()=>{const m=$('#pM').value;if(!m){toast('Selecciona el motivo');return false}
+  wr(c.ot,['estado','Perdido','motivo',m,'bitacora',arrayUnion(ent('WhatsApp','Perdido — '+m,$('#pN').value)),'resHoy',TODAY+'|Perdido'])})}
+
+/* ================= IMPORTAR ================= */
+async function guardarImportacion(plan,archivo,prog){
+  const ops=[];
+  for(const {ot,doc:d} of plan.nuevos)ops.push(b=>b.set(ref(ot),d));
+  for(const {ot,patch} of plan.cambios){
+    const d={actualizado:iso(),actualizadoPor:USER.nombre};
+    if(patch.partidas)d.partidas=patch.partidas;if(patch.fecha)d.fecha=patch.fecha;if(patch.estado)d.estado=patch.estado;
+    if(patch.recuperos)d.recuperos=arrayUnion(...patch.recuperos);if(patch.bitacora)d.bitacora=arrayUnion(...patch.bitacora);
+    ops.push(b=>b.set(ref(ot),d,{merge:true}));
+  }
+  const st=plan.stats;
+  ops.push(b=>b.set(doc(collection(db,'crm_importaciones')),{fecha:TODAY,creada:iso(),archivo,filas:st.filas,ordenes:st.ordenes,nuevos:st.nuevos,actualizados:st.actualizados,recuperados:st.recuperados,montoRecuperado:st.montoRecuperado,avisos:st.avisos,usuario:USER.nombre}));
+  for(let i=0;i<ops.length;i+=450){
+    const b=writeBatch(db);ops.slice(i,i+450).forEach(f=>f(b));
+    prog.textContent='Guardando en Firebase… '+Math.min(i+450,ops.length)+' de '+ops.length;
+    await b.commit();
+  }
+}
+const vacio=(t,m)=>`<div class="empty"><b>${t}</b>${m}</div>`;
+async function importarCotizaciones(rows,archivo,box){
+  if(!ready.casos){box.innerHTML=vacio('Todavía no hay conexión con Firebase','Espera unos segundos y vuelve a intentarlo, para no pisar datos.');return}
+  const plan=planImport(rows,S.casos,{hoy:TODAY,usuario:USER.nombre});
+  if(plan.error){box.innerHTML=vacio('El archivo no tiene el formato esperado','Faltan columnas: '+plan.error.join(', ')+'. Descarga el “Reporte de Actividad – Cotizaciones” de Clear Mechanic.');return}
+  box.innerHTML=`<div class="panel"><b class="prog">Guardando cotizaciones en Firebase…</b></div>`;
+  try{await guardarImportacion(plan,archivo,box.querySelector('.prog'))}catch(e){box.innerHTML=vacio('No se pudo guardar la importación',esc(e.code||e.message)+'. Puedes volver a subir el mismo archivo: no duplica.');return}
+  const s=plan.stats;
+  box.innerHTML=`<h2>Cotizaciones · ${esc(archivo)}</h2><div class="steps">
+   <div class="step"><span class="num">${s.filas.toLocaleString('es-GT')}</span><b>filas leídas</b><span class="sm">${s.ordenes} órdenes · ${s.partidas} partidas con precio</span></div>
+   <div class="step"><span class="num">${s.nuevos}</span><b>casos nuevos</b><span class="sm">Órdenes con partidas rechazadas o pendientes</span></div>
+   <div class="step"><span class="num">${s.recuperados}</span><b>recuperados detectados</b><span class="sm">${Q(s.montoRecuperado)} que pasaron a “Aprobado”</span></div>
+   <div class="step"><span class="num">${s.avisos}</span><b>avisos de calidad</b><span class="sm">Partidas aprobadas o rechazadas sin precio</span></div></div>
+   <div class="panel" id="impCart"></div>`;
+  toast('Cotizaciones importadas');
+  rehacerAgendaTrasImport();
+}
+async function importarEnlaces(rows,archivo,box){
+  if(!ready.casos||!ready.enl){box.innerHTML=vacio('Todavía no hay conexión con Firebase','Espera unos segundos y vuelve a intentarlo.');return}
+  const plan=planEnlaces(rows,S.enlaces);
+  if(plan.error){box.innerHTML=vacio('El archivo no tiene el formato esperado','Faltan columnas: '+plan.error.join(', ')+'. Descarga el “Reporte de Actividad – Formas de Inspección” de Clear Mechanic.');return}
+  const n=Object.keys(plan.cambios).length,st=plan.stats;
+  box.innerHTML=`<div class="panel"><b>Guardando enlaces en Firebase…</b></div>`;
+  try{await setDoc(doc(db,'crm_enlaces','carretera'),{...(n?{urls:plan.cambios}:{}),ultima:{fecha:TODAY,creada:iso(),archivo,filas:st.filas,usuario:USER.nombre}},{merge:true})}
+  catch(e){box.innerHTML=vacio('No se pudo guardar los enlaces',esc(e.code||e.message)+'. Puedes volver a subir el mismo archivo: no duplica.');return}
+  const urls={...S.enlaces,...plan.cambios},ab=Object.values(S.casos).filter(abierto),con=ab.filter(c=>urls[c.ot]).length,sin=ab.length-con;
+  box.innerHTML=`<h2>Enlaces de inspección · ${esc(archivo)}</h2><div class="steps" id="impEnl">
+   <div class="step"><span class="num">${st.filas.toLocaleString('es-GT')}</span><b>órdenes leídas</b><span class="sm">${st.invalidos?st.invalidos+' sin enlace válido':'todas con enlace'}</span></div>
+   <div class="step"><span class="num">${st.nuevos}</span><b>enlaces nuevos</b><span class="sm">Órdenes que antes no tenían enlace</span></div>
+   <div class="step"><span class="num">${st.actualizados}</span><b>enlaces actualizados</b><span class="sm">${st.iguales} ya estaban igual</span></div>
+   <div class="step"><span class="num">${sin}</span><b>casos abiertos sin enlace</b><span class="sm">${con} de ${ab.length} tienen enlace</span></div></div>
+   ${sin?`<div class="msg">${sin===1?'Hay 1 caso abierto sin enlace':'Hay '+sin+' casos abiertos sin enlace'}: son órdenes anteriores al rango de este reporte. Descarga “Formas de Inspección” con un rango más amplio y vuelve a subirlo.</div>`:''}`;
+  toast('Enlaces importados');
+}
+async function rehacerAgendaTrasImport(){ if(S.agenda[TODAY])await rehacerAgenda(); else ensureAgenda(); }
+/* Acepta uno o varios archivos y reconoce cada reporte por sus columnas */
+async function procesarArchivos(files){
+  if(!canAct()||!files.length)return;
+  if(!window.XLSX){toast('No se pudo cargar el lector de Excel');return}
+  $('#impRes').innerHTML='';
+  for(const file of files){
+    const box=document.createElement('div');box.className='impBlock';$('#impRes').append(box);
+    try{
+      const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true});
+      const tipo=tipoReporte(rows);
+      if(tipo==='cotizaciones')await importarCotizaciones(rows,file.name,box);
+      else if(tipo==='enlaces')await importarEnlaces(rows,file.name,box);
+      else box.innerHTML=vacio('No reconozco el archivo “'+esc(file.name)+'”','Debe ser el “Reporte de Actividad – Cotizaciones” o el “Reporte de Actividad – Formas de Inspección” de Clear Mechanic.');
+    }catch(err){box.innerHTML=vacio('No se pudo leer “'+esc(file.name)+'”',esc(err.message))}
+  }
+}
+
+/* ================= RESPALDO ================= */
+async function descargarRespaldo(){
+  if(!canAct()||!ready.casos)return;
+  if(!window.XLSX){toast('No se pudo cargar el lector de Excel');return}
+  const H=filasRespaldo(S.casos,S.enlaces),sm=semanaStats(),ms=mesStats(),base=S.cfg.base==='mo'?ms.mo:ms.monto;
+  const ab=Object.values(S.casos).filter(abierto);
+  const resumen=[['Respaldo CRM Lube N Save Carretera al Salvador'],['Generado',TODAY+' por '+USER.nombre],[],
+    ['Casos en total',Object.keys(S.casos).length],['Casos abiertos',ab.length],['Cartera dormida Q',r2(ab.reduce((a,c)=>a+montoCaso(c),0))],
+    ['Recuperado total Q',r2(Object.values(S.casos).reduce((a,c)=>a+(c.recuperos||[]).reduce((x,r)=>x+r.monto,0),0))],
+    ['Descuentos aplicados Q',r2(Object.values(S.casos).reduce((a,c)=>a+(c.descuento||0),0))],['Recuperado de la semana Q',r2(sm.monto)],['Recuperado del mes Q',r2(ms.monto)],['Base del incentivo del mes Q',r2(base)],['Incentivo del mes Q',r2(incentivo(base))],
+    ['Última importación',S.imports[0]?S.imports[0].fecha+' ('+(S.imports[0].archivo||'')+')':'—']];
+  const wb=XLSX.utils.book_new();
+  const add=(n,ws,w)=>{ws['!cols']=w.map(x=>({wch:x}));XLSX.utils.book_append_sheet(wb,ws,n)};
+  add('Resumen',XLSX.utils.aoa_to_sheet(resumen),[30,46]);
+  add('Cartera',XLSX.utils.json_to_sheet(H.Cartera),[8,26,12,24,10,36,9,14,7,12,15,15,24,12,14,12,9,9,9,14,24]);
+  add('Partidas',XLSX.utils.json_to_sheet(H.Partidas),[8,26,46,20,11,10,10,12]);
+  add('Bitácora',XLSX.utils.json_to_sheet(H['Bitácora']),[12,8,26,16,34,40,12]);
+  add('Recuperos',XLSX.utils.json_to_sheet(H.Recuperos),[12,8,26,12,10,16,12]);
+  const hc=['Mes','Meta Q','% hasta la meta','% sobre la meta','Base','Recuperado Q','M.O. recuperada Q','Base del incentivo Q','Incentivo Q','Autorizaciones','Contactos','Cartera abierta al cierre Q','Asesor','Cerrado por','Cerrado'];
+  add('Cierres mensuales',XLSX.utils.aoa_to_sheet([hc,...[...S.cierres].reverse().map(x=>[x.mes,x.meta,x.pct1,x.pct2,x.base==='mo'?'Mano de obra':'Total',x.recuperado,x.recuperadoMO,x.baseIncentivo,x.incentivo,x.autorizados,x.contactos,x.carteraAbierta,x.asesor||'',x.cerradoPor||'',x.cerrado||''])]),[10,10,10,10,13,13,13,14,12,12,10,16,12,12,24]);
+  try{XLSX.writeFile(wb,'CRM_LNS_Respaldo_'+TODAY+'.xlsx')}catch(e){toast('No se pudo generar el archivo: '+e.message);return}
+  try{await setDoc(doc(db,'crm_config','carretera'),{ultimoRespaldo:{fecha:TODAY,por:USER.nombre,casos:Object.keys(S.casos).length}},{merge:true});toast('Respaldo descargado')}
+  catch(e){toast('Se descargó, pero no se pudo anotar la fecha: '+(e.code||e.message))}
+}
+
+/* ================= PIN Y USUARIOS ================= */
+const pinOk=p=>/^\d{6}$/.test(p);
+const nuevoPin=async(id,pin)=>{const sal=[...crypto.getRandomValues(new Uint8Array(16))].map(x=>x.toString(16).padStart(2,'0')).join('');return {sal,pinHash:await hashPin(sal,id,pin)}};
+async function recargarUsuarios(){try{US=(await getDocs(collection(db,'crm_usuarios'))).docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.nombre.localeCompare(b.nombre))}catch(e){}scheduleRender()}
+const pinInput=(id,l)=>`<label>${l}<input id="${id}" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></label>`;
+function dlgCambiarPin(u){
+  const propio=u.id===USER.id;
+  openDlg(`<h2>${propio?'Cambiar mi PIN':'Restablecer PIN · '+esc(u.nombre)}</h2>${propio?pinInput('pA','PIN actual'):''}${pinInput('pN1','PIN nuevo (6 dígitos)')}${pinInput('pN2','Repite el PIN nuevo')}`,()=>{
+    const a=propio?$('#pA').value.trim():'',n1=$('#pN1').value.trim(),n2=$('#pN2').value.trim();
+    (async()=>{
+      if(!pinOk(n1)){toast('El PIN nuevo debe tener exactamente 6 dígitos');return}
+      if(n1!==n2){toast('Los dos PIN nuevos no coinciden');return}
+      if(propio&&await hashPin(u.sal,u.id,a)!==u.pinHash){toast('El PIN actual no es correcto');return}
+      if(propio&&a===n1){toast('El PIN nuevo debe ser distinto del actual');return}
+      try{const h=await nuevoPin(u.id,n1);await updateDoc(doc(db,'crm_usuarios',u.id),h);Object.assign(u,h);if(propio)Object.assign(USER,h);closeDlg();toast(propio?'PIN cambiado':'PIN de '+u.nombre+' restablecido');recargarUsuarios()}
+      catch(e){toast('No se pudo guardar: '+(e.code||e.message))}
+    })();return false});
+  const f=$('#pA')||$('#pN1');f&&f.focus();
+}
+function dlgNuevoUsuario(){
+  openDlg(`<h2>Agregar usuario</h2><label>Nombre<input id="uN" maxlength="30" autocomplete="off"></label>
+   <label>Rol<select id="uR"><option value="consulta">Consulta (solo ve)</option><option value="asesor">Asesor (registra, importa)</option><option value="jefe">Jefe (todo, incluido Ajustes)</option></select></label>${pinInput('uP','PIN inicial (6 dígitos)')}`,()=>{
+    const nombre=$('#uN').value.trim(),rol=$('#uR').value,pin=$('#uP').value.trim();
+    const id=nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+    (async()=>{
+      if(!nombre||!id){toast('Escribe el nombre');return}
+      if(!pinOk(pin)){toast('El PIN debe tener exactamente 6 dígitos');return}
+      if(US.some(x=>x.id===id)){toast('Ya existe un usuario con ese nombre');return}
+      try{const h=await nuevoPin(id,pin);await setDoc(doc(db,'crm_usuarios',id),{nombre,rol,activo:true,...h});closeDlg();toast('Usuario '+nombre+' creado');recargarUsuarios()}
+      catch(e){toast('No se pudo guardar: '+(e.code||e.message))}
+    })();return false});
+}
+async function alternarAcceso(id){
+  const u=US.find(x=>x.id===id);if(!u||u.id===USER.id)return;
+  try{await updateDoc(doc(db,'crm_usuarios',id),{activo:u.activo===false});toast(u.activo===false?u.nombre+' puede entrar otra vez':'Acceso de '+u.nombre+' desactivado');recargarUsuarios()}catch(e){toast('No se pudo guardar: '+(e.code||e.message))}
+}
+
+/* ================= RENDER ================= */
+let tab='hoy',casoSel=null,fEst='Abiertos',fBus='';
+const loadingHtml=`<div class="empty"><b>Cargando datos…</b>Conectando con Firebase.</div>`;
+function chipsCaso(c){const st=dueStage(c),d=dias(c);return `<span class="chip ${c.sem==='rojo'?'r':c.sem==='verde'?'g':'a'}">${{rojo:'CRÍTICO',amarillo:'PREVENTIVO',verde:'VIGILAR'}[c.sem]}</span>${st?`<span class="chip y">Toca: ${st.l}</span>`:c.estado==='Reprogramado'?`<span class="chip y">Reprogramado: ${fmtD(c.proximo)}</span>`:''}<span class="chip">${esc(c.estado)} · ${d} días</span><span class="chip">M.O. ${Q(moCaso(c))}</span>`}
+function cardHoy(c,dia){
+  const r=c.resHoy&&c.resHoy.startsWith(TODAY)?c.resHoy.split('|')[1]:null,w=wa(c),A=canAct();
+  return `<article class="card ${r?'done':''}"><div class="st ${c.sem}"></div><div class="cb">
+   <div class="row"><div><span class="nm">${esc(c.cliente)}</span> <span class="sm">${esc(c.vehiculo)} · ${esc(c.placa)}${c.km?' · '+(+c.km).toLocaleString('es-GT')+' km':''} · OT ${esc(c.ot)}</span></div><span class="money">${Q(montoCaso(c))}</span></div>
+   <div class="chips">${chipsCaso(c)}</div>
+   ${dia?`<div class="sm"><b>Quedó sin registrar</b> de la lista del ${fmtD(dia)}.</div>`:''}
+   <div class="sm">${topItems(c,5).map(p=>esc(p.punto)+' '+Q(p.total)).join(' · ')}</div>
+   ${r?`<div class="msg"><b>Registrado hoy:</b> ${esc(r)}</div><div class="acts">${verRep(c)}<button class="btn" data-ver="${c.ot}">Ver caso</button></div>`:`<div class="msg">${esc(mensaje(c))}</div>
+   <div class="acts">${A?`${w?`<a class="btn k1" href="${w}" target="_blank" rel="noopener" data-a="enviado" data-ot="${c.ot}">Abrir WhatsApp</a>`:''}<button class="btn" data-copy="${c.ot}">Copiar</button><button class="btn" data-a="autorizo" data-ot="${c.ot}">Autorizó</button><button class="btn" data-a="repro" data-ot="${c.ot}">Reprogramar</button><button class="btn" data-a="sinresp" data-ot="${c.ot}">Sin respuesta</button><button class="btn" data-a="perdido" data-ot="${c.ot}">Perdido</button>`:''}${dia&&A?`<button class="btn" data-addhoy="${c.ot}">Agregar a la lista de hoy</button>`:''}${verRep(c)}<button class="btn" data-ver="${c.ot}">Ver caso</button></div>`}
+  </div></article>`;
+}
+function renderHoy(){
+  const el=$('#hoy');
+  if(!ready.casos){el.innerHTML=loadingHtml;return}
+  if(!Object.keys(S.casos).length){el.innerHTML=`<div><h1>Tus casos de hoy</h1></div><div class="empty"><b>Todavía no hay casos</b>${canAct()?'Ve a “Importar Clear Mechanic” y sube el reporte de cotizaciones. El sistema arma la agenda solo.':'Aún no se ha importado el reporte de Clear Mechanic.'}</div>${canAct()?'<div class="acts"><button class="btn k1" data-go="importar">Importar ahora</button></div>':''}`;return}
+  if(!S.agenda[TODAY]){el.innerHTML=`<div><h1>Tus casos de hoy</h1></div><div class="empty"><b>${canAct()?'Armando la agenda de hoy…':'La agenda de hoy todavía no está armada'}</b>${canAct()?'Un momento.':'La arma el asesor al abrir el sistema.'}</div>`;return}
+  const ag=S.agenda[TODAY].map(o=>S.casos[o]).filter(Boolean);
+  const hechos=ag.filter(c=>c.resHoy&&c.resHoy.startsWith(TODAY)).length,pend=pendientesAnteriores(S.casos,S.agenda,TODAY);
+  const sem=semanaStats();const ult=S.imports.length?S.imports[0].fecha:null;const atras=ult?daysBetween(ult,TODAY):null;const ub=S.cfg.ultimoRespaldo,bk=ub?daysBetween(ub.fecha,TODAY):null;
+  el.innerHTML=`<div class="row"><div><h1>Tus casos de hoy</h1><p class="lead">Entre ${S.cfg.min} y ${S.cfg.max} casos por día: primero los reprogramados y los seguimientos que vencen (48 h · 7 d · 30 d), después los de mayor monto × urgencia. Registra el resultado de cada uno.</p></div>${canAct()?'<button class="btn" id="reAg">Rehacer agenda</button>':''}</div>
+   <div class="kpis"><div class="k hl"><div class="l">En juego hoy</div><div class="v">${Q(ag.reduce((a,c)=>a+montoCaso(c),0))}</div><div class="n">${pl(ag.length,'caso asignado','casos asignados')}</div></div>
+   <div class="k"><div class="l">Registrados</div><div class="v">${hechos} / ${ag.length}</div><div class="n">Meta: todos antes de las 12:00</div></div>
+   <div class="k"><div class="l">Recuperado esta semana</div><div class="v">${Q(sem.monto)}</div><div class="n">${pl(sem.autor,'caso autorizado','casos autorizados')}</div></div></div>
+   ${atras!==null&&atras>7?`<div class="msg"><b>Última carga de Clear Mechanic hace ${atras} días.</b> Sube el reporte de los últimos 30 días para no perder los seguimientos de 48 h y 7 días. ${canAct()?'<button class="btn" data-go="importar">Importar</button>':''}</div>`:''}
+   ${!ult?`<div class="msg"><b>Aún no hay cargas registradas.</b></div>`:''}
+   ${isJefe()&&(bk===null||bk>7)?`<div class="msg"><b>${bk===null?'Todavía no hay respaldo del CRM.':'Último respaldo hace '+bk+' días.'}</b> Descárgalo en Semana → Respaldo. <button class="btn" data-go="semana">Ir a Semana</button></div>`:''}
+   ${ag.length?ag.map(c=>cardHoy(c)).join(''):`<div class="empty"><b>Sin casos para hoy</b>No hay seguimientos pendientes en la cartera.</div>`}
+   ${pend.length?`<div id="pendAnt"><h2>Pendientes de días anteriores (${pend.length})</h2><p class="lead">Casos que estaban en la lista de un día pasado y nadie ha contactado desde entonces. No cuentan en el tope de ${S.cfg.max} por día; si quieres trabajarlos hoy puedes agregarlos a la lista.</p>${pend.slice(0,15).map(x=>cardHoy(x.c,x.dia)).join('')}${pend.length>15?`<p class="note">Y ${pend.length-15} más; aparecerán a medida que se atiendan estos.</p>`:''}</div>`:''}`;
+}
+function renderCartera(){
+  const el=$('#cartera');if(!ready.casos){el.innerHTML=loadingHtml;return}
+  const all=Object.values(S.casos),ab=all.filter(abierto);
+  const est=['Abiertos','Pendiente','Rechazado','Sin respuesta','En negociación','Reprogramado','Recuperado','Perdido','En taller','Todos'];
+  let l=all.filter(c=>fEst==='Todos'||(fEst==='Abiertos'?abierto(c):c.estado===fEst));
+  if(fBus){const q=fBus.toLowerCase();l=l.filter(c=>[c.ot,c.cliente,c.placa,c.vehiculo].join(' ').toLowerCase().includes(q))}
+  l.sort((a,b)=>montoCaso(b)-montoCaso(a)||(b.fecha||'').localeCompare(a.fecha||''));
+  const rec=all.reduce((a,c)=>a+(c.recuperos||[]).reduce((x,r)=>x+r.monto,0),0);
+  el.innerHTML=`<div><h1>Cartera de presupuestos</h1><p class="lead">Todo lo que el cliente no autorizó en Clear Mechanic entra aquí. Nada se cierra sin motivo registrado.</p></div>
+   <div class="kpis"><div class="k hl"><div class="l">Monto dormido</div><div class="v" id="kDorm">${Q(ab.reduce((a,c)=>a+montoCaso(c),0))}</div><div class="n">${pl(ab.length,'caso abierto','casos abiertos')}</div></div>
+   <div class="k"><div class="l">≥ Q5,000</div><div class="v">${ab.filter(c=>montoCaso(c)>=5000).length}</div><div class="n">${Q(ab.filter(c=>montoCaso(c)>=5000).reduce((a,c)=>a+montoCaso(c),0))}</div></div>
+   <div class="k"><div class="l">Recuperado total</div><div class="v">${Q(rec)}</div><div class="n">${pl(all.filter(c=>c.estado==='Recuperado').length,'caso cerrado','casos cerrados')}</div></div>
+   <div class="k"><div class="l">Perdidos</div><div class="v">${all.filter(c=>c.estado==='Perdido').length}</div><div class="n">con motivo registrado</div></div></div>
+   <div class="toolbar"><select id="fEst" aria-label="Estado">${est.map(e=>`<option ${e===fEst?'selected':''}>${e}</option>`).join('')}</select><input id="fBus" type="search" placeholder="Buscar OT, cliente, placa…" value="${esc(fBus)}" aria-label="Buscar"></div>
+   ${l.length?`<div class="tw"><table><thead><tr><th>OT</th><th>Cliente</th><th>Vehículo · Placa</th><th>Principal pendiente</th><th>Estado</th><th style="text-align:right">Días</th><th style="text-align:right">Monto</th></tr></thead><tbody>
+   ${l.map(c=>`<tr class="click" data-ver="${c.ot}"><td>${esc(c.ot)}</td><td>${esc(c.cliente)}</td><td>${esc(c.vehiculo)} · ${esc(c.placa)}</td><td>${esc(topItems(c,1)[0]?.punto||'—')}</td><td><span class="pill ${c.estado.replace(/\s/g,'')}">${esc(c.estado)}</span></td><td class="n">${dias(c)}</td><td class="n">${Q(montoCaso(c))}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty"><b>Sin casos con ese filtro</b>${all.length?'Cambia el estado o la búsqueda.':'Importa el reporte de Clear Mechanic para llenar la cartera.'}</div>`}`;
+}
+function renderCaso(){
+  const el=$('#caso');if(!ready.casos){el.innerHTML=loadingHtml;return}
+  const c=S.casos[casoSel];
+  if(!c){el.innerHTML=`<div class="empty"><b>Selecciona un caso</b>Ábrelo desde la agenda de hoy o desde la cartera.</div>`;return}
+  const parts=Object.values(c.partidas).sort((a,b)=>b.total-a.total),A=canAct();
+  el.innerHTML=`<div class="row"><div><h1>OT ${esc(c.ot)} · ${esc(c.cliente)}</h1><p class="lead">${esc(c.vehiculo)} · ${esc(c.placa)}${c.km?' · '+(+c.km).toLocaleString('es-GT')+' km':''} · cotizado ${fmtD(c.fecha)} · Tel. ${esc(c.movil||'—')}</p></div><button class="btn" data-go="cartera">← Cartera</button></div>
+  <div class="chips">${chipsCaso(c)}${c.descuento?`<span class="chip g">Recuperado al 100% · descuento ${Q2(c.descuento)} (${pctDesc(c)}%)</span>`:''}</div>
+  <div class="grid2"><div class="panel"><h2>Partidas</h2>
+   <div class="tw" style="border:0"><table><thead><tr><th>Punto de inspección</th><th>Clear Mechanic</th><th style="text-align:right">M.O.</th><th style="text-align:right">Total</th></tr></thead><tbody>
+   ${parts.map(p=>`<tr class="${p.estadoCM==='Aprobado'||p.recuperada?'done':''}"><td>${esc(p.punto)}</td><td>${p.recuperada?'Recuperada':esc(p.estadoCM)}</td><td class="n">${Q(p.mo)}</td><td class="n">${Q(p.total)}</td></tr>`).join('')}
+   <tr><td><b>Pendiente por recuperar</b></td><td></td><td class="n"><b>${Q(moCaso(c))}</b></td><td class="n"><b>${Q(montoCaso(c))}</b></td></tr></tbody></table></div>
+   <h2>Bitácora de contactos</h2><div class="tl">${(c.bitacora||[]).slice().sort((a,b)=>(b.ts||0)-(a.ts||0)||(b.fecha||'').localeCompare(a.fecha||'')).map(b=>`<div><b>${fmtD(b.fecha)}</b><span>${esc(b.canal)}</span><span>${esc(b.resultado)}${b.nota?' · '+esc(b.nota):''}${b.usuario?' · <i>'+esc(b.usuario)+'</i>':''}</span></div>`).join('')||'<p class="sm">Sin contactos registrados.</p>'}</div></div>
+  <div class="panel"><h2>Urgencia</h2><div class="sem3" id="sem3">${['rojo','amarillo','verde'].map(s=>`<button class="${s}" aria-pressed="${c.sem===s}" ${A?`data-sem="${s}"`:'disabled'}>${{rojo:'Crítico',amarillo:'Preventivo',verde:'Vigilar'}[s]}</button>`).join('')}</div>
+   <h2>Seguimientos</h2><div class="chips">${STAGES.map(s=>`<span class="chip ${c.seg[s.k]?'g':dias(c)>=s.d&&abierto(c)?'r':''}">${s.l}${c.seg[s.k]?' ✓':''}</span>`).join('')}</div>
+   ${abierto(c)?`<h2>Mensaje sugerido</h2><div class="msg">${esc(mensaje(c))}</div>`:''}
+   ${abierto(c)?(A?`<div class="acts">${wa(c)?`<a class="btn k1" href="${wa(c)}" target="_blank" rel="noopener" data-a="enviado" data-ot="${c.ot}">Abrir WhatsApp</a>`:''}<button class="btn" data-a="autorizo" data-ot="${c.ot}">Autorizó</button><button class="btn" data-a="negocia" data-ot="${c.ot}">En negociación</button><button class="btn" data-a="repro" data-ot="${c.ot}">Reprogramar</button><button class="btn" data-a="sinresp" data-ot="${c.ot}">Sin respuesta</button><button class="btn" data-a="perdido" data-ot="${c.ot}">Perdido</button></div>`:''):`<p class="sm">Caso cerrado: <b>${esc(c.estado)}</b>${c.motivo?' · '+esc(c.motivo):''}</p>`}
+   ${isJefe()&&!abierto(c)&&c.estado!=='Recuperado'&&(c.recuperos||[]).length?`<div class="acts"><button class="btn k1" data-a="marcarRec" data-ot="${c.ot}">Marcar como Recuperado (ya tiene monto autorizado)</button></div><p class="note">Solo jefe: cambia solo el estado de ${esc(c.estado)} a Recuperado; los montos ya registrados no cambian.</p>`:''}
+   ${isJefe()&&!abierto(c)&&c.estado!=='Recuperado'&&montoCaso(c)>0?`<div class="acts"><button class="btn" data-a="autorizoJ" data-ot="${c.ot}">Registrar recuperación (cambiar de ${esc(c.estado)} a Recuperado)</button></div><p class="note">Solo jefe: úsalo si el caso se cerró como ${esc(c.estado)} pero el cliente sí autorizó y debe contar como recuperado.</p>`:''}
+   ${isJefe()&&(c.recuperos||[]).some(r=>r.tipo==='clear-mechanic')?`<div class="acts"><button class="btn" data-a="yaaut" data-ot="${c.ot}">Quitar de lo recuperado (ya estaba autorizado)</button></div><p class="note">Solo jefe: la carga de Clear Mechanic lo contó como recuperado, pero el cliente ya había autorizado antes.</p>`:''}
+   ${isJefe()&&(c.recuperos||[]).length&&(montoCaso(c)>0||c.descuento)?`<div class="acts"><button class="btn" data-a="descuento" data-ot="${c.ot}">${c.descuento?'Editar descuento':'Ajustar a recuperación total (descuento)'}</button></div><p class="note">Solo jefe: úsalo si el cliente autorizó todo pero se facturó con descuento.</p>`:''}
+   <h2>Enlaces</h2>${enlaceDe(c)?'':'<p class="note">Este caso no tiene enlace de inspección: carga el reporte “Formas de Inspección” en Importar.</p>'}<div class="acts">${verRep(c,'Ver reporte con fotos y videos','btn k1')}<a class="btn" href="https://lubensave14.clearmechanic.com/dashboard/orders" target="_blank" rel="noopener">Clear Mechanic</a>${abierto(c)&&A?`<button class="btn" data-a="taller" data-ot="${c.ot}">Marcar en taller</button>`:''}</div>
+  </div></div>`;
+}
+function weekStart(d){const [y,m,dd]=d.split('-').map(Number);const dt=new Date(y,m-1,dd);const w=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-w);return ymd(dt)}
+function semanaStats(){
+  const ws=weekStart(TODAY);let monto=0,mo=0,autor=0;const porDia={};
+  for(let i=0;i<6;i++){const d=addDays(ws,i);porDia[d]={asig:(S.agenda[d]||[]).length,cont:0,aut:0,monto:0}}
+  for(const c of Object.values(S.casos)){(c.bitacora||[]).forEach(b=>{if(porDia[b.fecha]&&b.canal!=='Clear Mechanic'&&b.canal!=='Sistema')porDia[b.fecha].cont++});(c.recuperos||[]).forEach(r=>{if(porDia[r.fecha]){porDia[r.fecha].aut++;porDia[r.fecha].monto+=r.monto;monto+=r.monto;mo+=r.mo;autor++}})}
+  return {ws,porDia,monto,mo,autor};
+}
+function mesStats(){const r=calcMes(S.casos,S.cfg,TODAY.slice(0,7));return {monto:r.recuperado,mo:r.recuperadoMO}}
+const incentivo=base=>incentivoCalc(base,S.cfg);
+let cierreSel='';
+function panelCierre(){
+  const meses=listaMeses(TODAY,6);if(!meses.includes(cierreSel))cierreSel=meses[0];
+  const cm=calcMes(S.casos,S.cfg,cierreSel),ex=S.cierres.find(x=>x.mes===cierreSel);
+  const filas=S.cierres.map(x=>`<tr><td>${esc(mesTxt(x.mes))}</td><td class="n">${Q(x.meta)}</td><td>${x.pct1}% / ${x.pct2}%</td><td>${x.base==='mo'?'M.O.':'Total'}</td><td class="n">${Q(x.recuperado)}</td><td class="n">${Q(x.recuperadoMO)}</td><td class="n">${x.autorizados}</td><td class="n"><b>${Q(x.incentivo)}</b></td><td>${esc(x.cerradoPor||'')} · ${fmtD((x.cerrado||'').slice(0,10))}</td></tr>`).join('');
+  return `<div class="panel" id="cierre"><h2>Cierre mensual</h2>
+   <p class="sm">Guarda, para cada mes, la meta y los porcentajes vigentes, lo recuperado y el incentivo que salió, para que no se pierda aunque después cambies los ajustes.</p>
+   ${isJefe()?`<div class="toolbar"><select id="cierreMes" aria-label="Mes">${meses.map(m=>`<option value="${m}" ${m===cierreSel?'selected':''}>${esc(mesTxt(m))}</option>`).join('')}</select>
+    <span class="sm">Con los ajustes actuales: recuperado <b>${Q(cm.recuperado)}</b> · incentivo <b>${Q(cm.incentivo)}</b></span>
+    <button class="btn k1" id="cierreGo">${ex?'Reemplazar cierre':'Guardar cierre'}</button></div>`:''}
+   ${S.cierres.length?`<div class="tw"><table><thead><tr><th>Mes</th><th style="text-align:right">Meta</th><th>% hasta / sobre</th><th>Base</th><th style="text-align:right">Recuperado</th><th style="text-align:right">M.O.</th><th style="text-align:right">Autorizados</th><th style="text-align:right">Incentivo</th><th>Cerrado por</th></tr></thead><tbody>${filas}</tbody></table></div>`:'<p class="sm">Todavía no hay meses cerrados.</p>'}</div>`;
+}
+function dlgCierre(){
+  const mes=cierreSel,cm=calcMes(S.casos,S.cfg,mes),ex=S.cierres.find(x=>x.mes===mes);
+  openDlg(`<h2>Cerrar ${esc(mesTxt(mes))}</h2>
+   <p class="sm">Se guardará con los ajustes <b>actuales</b>: meta ${Q(S.cfg.meta)}, ${S.cfg.pct1}% hasta la meta y ${S.cfg.pct2}% sobre la meta, base ${S.cfg.base==='mo'?'mano de obra':'monto total'}.</p>
+   <p class="sm">Recuperado: <b>${Q(cm.recuperado)}</b> (M.O. ${Q(cm.recuperadoMO)}) · ${pl(cm.autorizados,'autorización','autorizaciones')} · ${pl(cm.contactos,'contacto','contactos')} · <b>Incentivo: ${Q(cm.incentivo)}</b></p>
+   ${ex?`<p class="msg"><b>Ya existe un cierre de este mes</b> (guardado por ${esc(ex.cerradoPor||'—')} el ${fmtD((ex.cerrado||'').slice(0,10))}, incentivo ${Q(ex.incentivo)}). Se reemplazará.</p>`:''}
+   ${mes===TODAY.slice(0,7)?'<p class="note">El mes todavía está en curso: si lo cierras ahora, el cierre queda parcial. Puedes reemplazarlo después.</p>':''}`,()=>{
+    const d={mes,meta:S.cfg.meta,pct1:S.cfg.pct1,pct2:S.cfg.pct2,base:S.cfg.base,asesor:S.cfg.asesor,recuperado:cm.recuperado,recuperadoMO:cm.recuperadoMO,baseIncentivo:cm.baseIncentivo,incentivo:cm.incentivo,autorizados:cm.autorizados,contactos:cm.contactos,carteraAbierta:cm.carteraAbierta,cerradoPor:USER.nombre,cerrado:iso()};
+    setDoc(doc(db,'crm_cierres',mes),d).then(()=>toast('Cierre de '+mesTxt(mes)+' guardado')).catch(e=>toast('No se pudo guardar el cierre: '+(e.code||e.message)));
+  });
+}
+function renderSemana(){
+  const el=$('#semana');if(!ready.casos){el.innerHTML=loadingHtml;return}
+  const s=semanaStats(),m=mesStats(),base=S.cfg.base==='mo'?m.mo:m.monto,inc=incentivo(base);
+  const D=['Lun','Mar','Mié','Jue','Vie','Sáb'];const rows=Object.entries(s.porDia);
+  const tot=rows.reduce((a,[,v])=>({asig:a.asig+v.asig,cont:a.cont+v.cont,aut:a.aut+v.aut,monto:a.monto+v.monto}),{asig:0,cont:0,aut:0,monto:0});
+  const all=Object.values(S.casos),cot=all.reduce((a,c)=>a+Object.values(c.partidas).filter(p=>p.estadoCM!=='Aprobado'||p.recuperada).reduce((x,p)=>x+p.total,0),0);
+  const rec=all.reduce((a,c)=>a+(c.recuperos||[]).reduce((x,r)=>x+r.monto,0),0),dorm=all.filter(abierto).reduce((a,c)=>a+montoCaso(c),0);
+  const pct=x=>cot?Math.round(x/cot*100):0;const desc=all.reduce((a,c)=>a+(c.descuento||0),0);
+  el.innerHTML=`<div><h1>Reporte del sábado</h1><p class="lead">Semana del ${fmtD(s.ws)} al ${fmtD(addDays(s.ws,5))}. Se llena solo con lo que se registra en “Hoy”.</p></div>
+  <div class="kpis"><div class="k"><div class="l">Casos asignados</div><div class="v">${tot.asig}</div><div class="n">${S.cfg.min}–${S.cfg.max} por día</div></div>
+   <div class="k"><div class="l">Contactos</div><div class="v">${tot.cont}</div><div class="n">registrados en bitácora</div></div>
+   <div class="k"><div class="l">Autorizados</div><div class="v">${tot.aut}</div><div class="n">${tot.cont?Math.round(tot.aut/tot.cont*100):0}% de retorno</div></div>
+   <div class="k hl"><div class="l">Recuperado semana</div><div class="v" id="kSem">${Q(tot.monto)}</div><div class="n">suma a la facturación · M.O. <span id="kSemMO">${Q(s.mo)}</span></div></div></div>
+  <div class="tw"><table><thead><tr><th>Día</th><th style="text-align:right">Asignados</th><th style="text-align:right">Contactos</th><th style="text-align:right">Autorizados</th><th style="text-align:right">Recuperado</th></tr></thead><tbody>
+   ${rows.map(([d,v],i)=>`<tr${d===TODAY?' style="background:var(--yellow-soft)"':''}><td>${D[i]} ${fmtD(d)}</td><td class="n">${v.asig}</td><td class="n">${v.cont}</td><td class="n">${v.aut}</td><td class="n">${v.monto?Q(v.monto):'—'}</td></tr>`).join('')}
+   <tr><td><b>Total</b></td><td class="n"><b>${tot.asig}</b></td><td class="n"><b>${tot.cont}</b></td><td class="n"><b>${tot.aut}</b></td><td class="n"><b>${Q(tot.monto)}</b></td></tr></tbody></table></div>
+  <div class="grid2"><div class="panel"><h2>Embudo de la cartera</h2>
+   <div class="fun"><span>No aprobado en CM</span><div class="bar"><i style="width:100%"></i></div><span class="money">${Q(cot)}</span></div>
+   <div class="fun"><span>Recuperado</span><div class="bar"><i class="y" style="width:${pct(rec)}%"></i></div><span class="money">${Q(rec)}</span></div>
+   ${desc?`<div class="fun"><span>Descuentos aplicados</span><div class="bar"><i style="width:${pct(desc)}%"></i></div><span class="money">${Q(desc)}</span></div>`:''}
+   <div class="fun"><span>Sigue dormido</span><div class="bar"><i style="width:${pct(dorm)}%"></i></div><span class="money">${Q(dorm)}</span></div></div>
+  <div class="panel"><h2>Incentivo de ${esc(S.cfg.asesor)} · mes en curso</h2>
+   <p class="sm">Recuperado del mes: <b>${Q(m.monto)}</b> · de eso, mano de obra: <b id="kMesMO">${Q(m.mo)}</b></p>
+   <p class="sm">Base: ${S.cfg.base==='mo'?'mano de obra recuperada':'monto recuperado'} del mes · ${S.cfg.pct1}% hasta la meta de ${Q(S.cfg.meta)} y ${S.cfg.pct2}% sobre el excedente.</p>
+   <div class="kpis"><div class="k"><div class="l">Base del mes</div><div class="v">${Q(base)}</div><div class="bar" style="height:6px;margin-top:6px"><i class="y" style="width:${S.cfg.meta?Math.min(100,base/S.cfg.meta*100):0}%"></i></div><div class="n">${S.cfg.meta?Math.round(base/S.cfg.meta*100):0}% de la meta</div></div><div class="k hl"><div class="l">Incentivo</div><div class="v">${Q(inc)}</div><div class="n">propuesta, sujeta a aprobación</div></div></div></div></div>
+  ${panelCierre()}
+  ${canAct()?`<div class="panel"><h2>Respaldo</h2><p class="sm">Excel con la cartera, las partidas, la bitácora y los recuperos (incluye casos cerrados). Contiene datos de clientes: guárdalo solo en tu computadora o nube privada. Recomendado: cada sábado.</p>
+   <p class="sm" id="bkInfo">${S.cfg.ultimoRespaldo?`Último respaldo: <b>${fmtD(S.cfg.ultimoRespaldo.fecha)}</b> por ${esc(S.cfg.ultimoRespaldo.por||'—')} (${S.cfg.ultimoRespaldo.casos} casos).`:'Todavía no se ha descargado ningún respaldo.'}</p>
+   <div class="acts"><button class="btn k1" id="bkp">Descargar respaldo (Excel)</button></div></div>`:''}
+  ${isJefe()?`<div class="panel"><h2>Ajustes</h2><div class="cfg">
+   <label>Asesor<input id="c_asesor" value="${esc(S.cfg.asesor)}"></label>
+   <label>Casos mínimos por día<input id="c_min" type="number" min="1" value="${S.cfg.min}"></label>
+   <label>Casos máximos por día<input id="c_max" type="number" min="1" value="${S.cfg.max}"></label>
+   <label>Meta mensual recuperada (Q)<input id="c_meta" type="number" min="0" value="${S.cfg.meta}"></label>
+   <label>% hasta la meta<input id="c_pct1" type="number" min="0" step="0.5" value="${S.cfg.pct1}"></label>
+   <label>% sobre la meta<input id="c_pct2" type="number" min="0" step="0.5" value="${S.cfg.pct2}"></label>
+   <label>Base del incentivo<select id="c_base"><option value="total" ${S.cfg.base==='total'?'selected':''}>Monto total recuperado</option><option value="mo" ${S.cfg.base==='mo'?'selected':''}>Mano de obra recuperada</option></select></label></div>
+   <div class="acts"><button class="btn k1" id="cSave">Guardar ajustes</button></div>
+   <h2 style="margin-top:8px">Usuarios y accesos</h2>
+   <div class="tw"><table><thead><tr><th>Usuario</th><th>Rol</th><th>Acceso</th><th></th></tr></thead><tbody>
+   ${US.map(u=>`<tr><td>${esc(u.nombre)}</td><td>${esc(u.rol)}</td><td>${u.activo===false?'<span class="pill">Desactivado</span>':'Activo'}</td><td style="text-align:right;white-space:nowrap"><button class="btn" data-upin="${esc(u.id)}">${u.id===USER.id?'Cambiar mi PIN':'Restablecer PIN'}</button>${u.id===USER.id?'':` <button class="btn" data-uact="${esc(u.id)}">${u.activo===false?'Activar':'Desactivar'}</button>`}</td></tr>`).join('')}</tbody></table></div>
+   <div class="acts"><button class="btn" id="uAdd">Agregar usuario</button></div>
+  </div>`:''}`;
+}
+function renderImportar(){
+  const u=S.imports[0];const box=$('#impUlt');if(!box)return;
+  const e=S.enlUlt;
+  box.innerHTML=(u?`Última carga de cotizaciones: <b>${fmtD(u.fecha)}</b> · ${esc(u.archivo||'')} · ${u.nuevos} nuevos, ${u.recuperados} recuperados detectados · por ${esc(u.usuario||'—')}`:'Todavía no se ha cargado ningún reporte de cotizaciones.')+'<br>'+(e?`Última carga de enlaces: <b>${fmtD(e.fecha)}</b> · ${esc(e.archivo||'')} · por ${esc(e.usuario||'—')}`:'Todavía no se han cargado los enlaces (Formas de Inspección).');
+  const c=$('#impCart');if(c){const ab=Object.values(S.casos).filter(abierto);c.innerHTML=`<b>Cartera abierta: ${ab.length} casos · <span id="kCart">${Q(ab.reduce((a,x)=>a+montoCaso(x),0))}</span></b><div class="acts"><button class="btn k1" data-go="hoy">Ver la agenda de hoy</button><button class="btn" data-go="cartera">Ver cartera</button></div>`}
+}
+function render(){if(!USER)return;({hoy:renderHoy,cartera:renderCartera,caso:renderCaso,semana:renderSemana,importar:renderImportar,manual:renderManual})[tab]()}
+let rq=0;function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const a=document.activeElement;if(a&&a.closest&&a.closest('#semana')&&/INPUT|SELECT/.test(a.tagName))return;render()})}
+function go(t){if(t==='importar'&&!canAct())t='hoy';if(t==='manual'&&tab!=='manual')manNuevas=new Set(noVistas().map(n=>n.id));tab=t;if(t!=='manual')pref('tab',t==='caso'?'cartera':t);document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.t===t)));document.querySelectorAll('section.scr').forEach(s=>s.hidden=s.id!==t);render();if(t==='manual')marcarVisto();else actualizarAviso();window.scrollTo(0,0)}
+
+
+/* ================= MANUAL DE USUARIO Y NOVEDADES =================
+   Cada vez que se publique un cambio visible para los usuarios: agregar una entrada ARRIBA en NOVEDADES
+   (id ascendente, p. ej. '2026-10-20a') y actualizar la sección del manual que corresponda. */
+const NOVEDADES=[
+ {id:'2026-10-13f',fecha:'2026-10-13',titulo:'Jefe de taller: corregir un caso cerrado como En taller o Perdido',texto:'Si un caso se cerró como En taller o Perdido pero el cliente sí autorizó, el jefe puede registrar la recuperación desde el caso para que cuente en lo recuperado y en el incentivo.',sec:'m-jefe'},
+ {id:'2026-10-13e',fecha:'2026-10-13',titulo:'Pendientes de días anteriores en “Hoy”',texto:'Los casos que estaban en la lista de un día pasado y nadie contactó ahora aparecen en una sección aparte debajo de la lista de hoy, para que no se escapen. Puedes trabajarlos ahí o agregarlos a la lista de hoy.',sec:'m-hoy'},
+ {id:'2026-10-13d',fecha:'2026-10-13',titulo:'Jefe de taller: quitar un caso que ya estaba autorizado',texto:'Si la carga de Clear Mechanic contó como recuperado un caso que el cliente ya había autorizado antes, el jefe puede quitarlo de lo recuperado desde el caso, con su nota.',sec:'m-jefe'},
+ {id:'2026-10-13c',fecha:'2026-10-13',titulo:'Cierre mensual del incentivo',texto:'En Semana hay un historial de meses cerrados con la meta, los porcentajes, lo recuperado y el incentivo de cada mes. El jefe de taller guarda el cierre; el respaldo en Excel lo incluye.',sec:'m-semana'},
+ {id:'2026-10-13b',fecha:'2026-10-13',titulo:'Jefe de taller: ajustar un caso con descuento',texto:'Si el cliente autorizó todo pero se facturó con descuento y quedó una diferencia pendiente, el jefe puede ajustar el caso a 100% recuperado desde el caso. El descuento queda registrado y se ve en Semana.',sec:'m-jefe'},
+ {id:'2026-10-13a',fecha:'2026-10-13',titulo:'Instala la herramienta como aplicación con el logo',texto:'Ahora puedes instalarla en tu computadora o celular con el ícono de Lube N Save y abrirla sin la barra del navegador. Si ya tenías un acceso directo viejo (con una “C”), bórralo y vuelve a instalarla.',sec:'m-instalar'},
+ {id:'2026-10-12b',fecha:'2026-10-12',titulo:'Manual de usuario dentro de la herramienta',texto:'Esta pestaña tiene el manual siempre actualizado. Cada vez que haya un cambio aparecerá un aviso amarillo y aquí lo verás explicado en “Novedades”.',sec:'m-que'},
+ {id:'2026-10-12a',fecha:'2026-10-12',titulo:'Enlace al reporte de fotos y videos',texto:'Cada caso tiene el botón “Ver reporte con fotos y videos” y el mensaje de WhatsApp ya incluye el enlace para el cliente. Para que funcione, la carga semanal incluye ahora los dos reportes de Clear Mechanic: Cotizaciones y Formas de Inspección.',sec:'m-carga'},
+ {id:'2026-10-09c',fecha:'2026-10-09',titulo:'Cambiar tu PIN',texto:'Arriba a la derecha hay un botón “Cambiar PIN”. Cámbialo la primera vez que entres.',sec:'m-entrar'},
+ {id:'2026-10-09b',fecha:'2026-10-09',titulo:'Respaldo semanal en Excel',texto:'En Semana → Respaldo se descarga un Excel con la cartera, la bitácora y lo recuperado. Hazlo cada sábado.',sec:'m-semana'},
+ {id:'2026-10-09a',fecha:'2026-10-09',titulo:'Autorizó: Total o Parcial se ajusta solo',texto:'Si el cliente autoriza menos de lo pendiente, el sistema lo registra como Parcial y el resto sigue en la cartera.',sec:'m-autoriza'}
+];
+const MAN=[
+ {id:'m-que',r:0,t:'Para qué sirve',h:`<p>Todo lo que el cliente no autorizó en Clear Mechanic queda en una lista. El sistema te dice cada día a quién contactar (entre 2 y 5 casos), te arma el mensaje de WhatsApp con el enlace a las fotos y videos de la inspección, y guarda lo que pasó. Lo que se recupera se suma al reporte del sábado y al incentivo del asesor.</p>`},
+ {id:'m-consulta',r:-1,t:'Tu usuario es de consulta',h:`<p>Con tu usuario puedes ver la agenda, la cartera, cada caso y el reporte de la semana, pero no registrar contactos ni cargar archivos. Cualquier cambio lo hace el asesor o el jefe de taller.</p>`},
+ {id:'m-entrar',r:0,t:'Entrar, salir y cambiar tu PIN',h:`<ul><li>Abre la dirección de la herramienta, toca tu <b>nombre</b> y escribe tu <b>PIN de 6 dígitos</b>.</li><li>Tu PIN es personal: no lo compartas. <b>Cámbialo la primera vez</b> con el botón <b>Cambiar PIN</b> (arriba a la derecha): PIN actual, PIN nuevo y repetirlo.</li><li>Si lo olvidas, el jefe de taller te lo restablece.</li><li>Al terminar toca <b>Salir</b>, sobre todo en computadoras compartidas.</li></ul>`},
+ {id:'m-instalar',r:0,t:'Instalar como aplicación (con el logo)',h:`<p>Puedes instalar la herramienta para abrirla con un ícono de Lube N Save y en su propia ventana, sin la barra del navegador.</p><ul><li><b>Computadora con Chrome:</b> abre la dirección de la herramienta, menú <b>⋮</b> (arriba a la derecha) → <b>Guardar y compartir</b> → <b>Instalar página como aplicación…</b>. Se crea el ícono en el escritorio.</li><li><b>Computadora con Edge:</b> menú <b>…</b> → <b>Aplicaciones</b> → <b>Instalar este sitio como aplicación</b>.</li><li><b>Celular Android (Chrome):</b> menú <b>⋮</b> → <b>Instalar aplicación</b> (o <b>Agregar a la pantalla de inicio</b>).</li><li><b>iPhone (Safari):</b> botón <b>Compartir</b> → <b>Agregar a pantalla de inicio</b>.</li></ul><p>Si ya tenías un acceso directo anterior (con una “C” gris), <b>bórralo</b> y vuelve a instalarla: el viejo no cambia de ícono por sí solo.</p>`},
+ {id:'m-hoy',r:1,t:'Tu rutina diaria: pantalla “Hoy”',h:`<p>Al empezar el día abre <b>Hoy</b>. Verás de 2 a 5 tarjetas; el color de la izquierda es la urgencia (rojo = crítico, amarillo = preventivo). Para cada una:</p><ol><li>Lee el mensaje sugerido y toca <b>Abrir WhatsApp</b>: se abre el chat con el mensaje ya escrito <b>y el enlace al reporte de fotos y videos</b>. Revísalo y envíalo desde WhatsApp.</li><li>Si quieres ver las fotos y lo cotizado, toca <b>Ver reporte</b> (es el mismo enlace que verá el cliente).</li><li>Apenas el cliente responda (o no), <b>registra el resultado</b>. Una tarjeta sin registrar es un cliente que el sistema cree que no has contactado.</li></ol><p><b>Meta: todas las tarjetas registradas antes de las 12:00.</b></p><p>Más abajo, en <b>Pendientes de días anteriores</b>, aparecen los casos que estaban en la lista de un día pasado y que nadie ha contactado desde entonces (hasta 14 días atrás). Se trabajan igual que los de hoy, y con <b>Agregar a la lista de hoy</b> pasan a contar entre los asignados del día. Los que ya contactaste o reprogramaste no aparecen.</p>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Cuándo usarlo</th><th>Qué pasa</th></tr></thead><tbody>
+  <tr><td>Autorizó</td><td>El cliente aceptó hacer el trabajo</td><td>Registra el monto recuperado (ver más abajo)</td></tr>
+  <tr><td>Reprogramar</td><td>Pide que lo busques después</td><td>Eliges la fecha; el caso vuelve a “Hoy” ese día</td></tr>
+  <tr><td>Sin respuesta</td><td>No contestó</td><td>Se reintenta en 3 días</td></tr>
+  <tr><td>Perdido</td><td>Ya no lo va a hacer</td><td>Debes elegir el motivo (obligatorio) y el caso se cierra</td></tr>
+  <tr><td>Copiar</td><td>Quieres pegar el mensaje en otro lado</td><td>Copia el texto sugerido</td></tr></tbody></table></div>`},
+ {id:'m-autoriza',r:1,t:'Cuando el cliente autoriza',h:`<ul><li>Toca <b>Autorizó</b>. El monto viene con lo pendiente: <b>cámbialo por lo que realmente autorizó el cliente</b> (y la mano de obra de esa parte).</li><li>Si autorizó <b>todo</b> lo pendiente queda como <b>Total</b> y el caso se cierra como Recuperado.</li><li>Si autorizó <b>solo una parte</b>, el sistema lo registra como <b>Parcial</b> al bajar el monto: descuenta lo autorizado y <b>el resto sigue en la cartera</b> para seguir insistiendo. La <b>mano de obra</b> se propone en proporción al monto; si conoces el valor exacto de la mano de obra autorizada, escríbelo.</li><li>Si el carro ya entró al taller, abre el caso y toca <b>Marcar en taller</b> para no volver a contactar al cliente.</li></ul>`},
+ {id:'m-cartera',r:0,t:'Cartera y Caso',h:`<ul><li><b>Cartera:</b> todos los casos. Filtra por estado o busca por OT, cliente o placa. Toca una fila para abrir el caso.</li><li><b>Caso:</b> partidas pendientes, bitácora de contactos (quién, cuándo, qué pasó), el botón <b>Ver reporte con fotos y videos</b> y el enlace a Clear Mechanic.</li><li>Si un caso no tiene enlace de inspección, se avisa: falta cargar el reporte “Formas de Inspección”.</li></ul>`},
+ {id:'m-semana',r:0,t:'Semana y respaldo',h:`<ul><li><b>Semana:</b> el reporte del sábado: casos asignados, contactos, autorizados, lo recuperado y el incentivo del mes. Se llena solo con lo que se registra en “Hoy”. Junto a lo recuperado se ve cuánto de eso es <b>mano de obra</b> (M.O.), también en el panel del incentivo.</li><li><b>Cierre mensual:</b> abajo del incentivo se ve el historial de meses cerrados (meta, porcentajes, recuperado, incentivo). El jefe de taller guarda el cierre de cada mes al terminar (idealmente con la meta y los porcentajes ya definidos para ese mes).</li><li><b>Respaldo</b> (asesor y jefe): en Semana → Respaldo, “Descargar respaldo (Excel)”. Hazlo cada sábado y guárdalo solo en tu computadora; trae datos de clientes y no debe enviarse por WhatsApp ni subirse a internet.</li></ul>`},
+ {id:'m-carga',r:1,t:'Cada lunes: carga de Clear Mechanic',h:`<p>La carga normalmente la hace el <b>jefe de taller</b>, pero el asesor también puede. Son <b>dos reportes</b> de Clear Mechanic, de los <b>últimos 30 días</b>:</p><ol><li>“Reporte de Actividad – <b>Cotizaciones</b>”</li><li>“Reporte de Actividad – <b>Formas de Inspección</b>” (trae el enlace de fotos y videos de cada orden)</li></ol><ul><li>En <b>Importar Clear Mechanic</b> arrastra los dos archivos juntos (o uno por uno, en cualquier orden): el sistema reconoce cuál es cuál.</li><li>Crea los casos nuevos, detecta a los clientes que ya aprobaron y asigna a cada caso su enlace. No duplica nada ni borra lo que ya se registró.</li><li>Si en “Hoy” aparece “Última carga de Clear Mechanic hace X días”, hay que cargar los reportes.</li><li><b>Lo registrado en la herramienta manda sobre el Excel:</b> si un caso está Recuperado, En taller, En negociación o Perdido, la carga no le cambia el estado ni lo recuperado aunque en Clear Mechanic siga como pendiente. Cuando se recupera un caso y Clear Mechanic abre una orden nueva, esa orden es otra OT y no se cuenta dos veces.</li></ul>`},
+ {id:'m-jefe',r:2,t:'Solo jefe de taller: ajustes y usuarios',h:`<ul><li><b>Semana → Ajustes:</b> casos por día, meta mensual y porcentajes del incentivo. Después de cambiar los casos por día usa “Rehacer agenda” en Hoy para aplicarlo.</li><li><b>Caso cerrado como En taller o Perdido que en realidad fue recuperado:</b> si el caso <b>ya tiene monto autorizado registrado</b>, ábrelo y toca <b>Marcar como Recuperado</b> (solo cambia el estado). Si <b>no</b> tiene monto, toca <b>Registrar recuperación</b>. Ahí escribes lo que el cliente autorizó (total o parcial) y una nota; queda como recuperado (semana, mes e incentivo) y la bitácora anota que fue corrección del jefe.</li><li><b>Caso que ya estaba autorizado antes:</b> si la carga de Clear Mechanic contó como “recuperado” un caso que el cliente ya había autorizado antes (Clear Mechanic no lo tenía marcado), abre el caso y toca <b>Quitar de lo recuperado (ya estaba autorizado)</b>. Se retiran esos montos de lo recuperado, del incentivo y de la semana, y la bitácora conserva el historial con tu nota. Si ya habías guardado el cierre de ese mes, vuelve a guardarlo para que se actualice.</li><li><b>Recuperación con descuento:</b> si el cliente autorizó todo pero se facturó con descuento y el caso sigue mostrando una diferencia pendiente, abre el caso y toca <b>Ajustar a recuperación total (descuento)</b>. El monto recuperado no cambia; la diferencia queda registrada como descuento (con tu nota en la bitácora) y el caso pasa a 100% recuperado. La ventana sugiere la diferencia exacta, con centavos. Si el caso ya tiene descuento, el botón pasa a <b>Editar descuento</b> para corregir el monto total. Para evitarlo en adelante, el asesor debe registrar en “Autorizó” el monto cotizado y dejar el descuento para el jefe.</li><li><b>Cierre mensual:</b> en Semana → Cierre mensual elige el mes y toca “Guardar cierre”. Se guardan la meta y los porcentajes <b>actuales</b>, lo recuperado, las autorizaciones y el incentivo que salió, para que no se pierdan si después cambias los ajustes. Si vuelves a cerrar el mismo mes, se reemplaza (pide confirmación). Primero ajusta la meta y los % del mes, luego cierra.</li><li><b>Usuarios y accesos</b> (Semana → Ajustes): agregar usuarios con su rol (consulta, asesor o jefe), restablecer el PIN de alguien y desactivar un acceso. Los usuarios no se borran, solo se desactivan.</li><li>Si pasan más de 7 días sin respaldo, en “Hoy” te sale un aviso.</li></ul>`},
+ {id:'m-reglas',r:0,t:'Reglas de oro',h:`<ul><li>Registra <b>cada</b> contacto el mismo día: la bitácora es la prueba del trabajo.</li><li>Nada se cierra sin motivo: “Perdido” siempre lleva razón.</li><li>No compartas tu PIN y toca <b>Salir</b> al terminar.</li><li>Si algo se ve raro o no carga: recarga la página (Ctrl + F5 en computadora). Si sigue igual, avisa al jefe de taller con una captura.</li></ul>`}
+];
+let manNuevas=new Set();
+const visto=()=>pref('visto_'+USER.id)||'';
+const noVistas=()=>NOVEDADES.filter(n=>n.id>visto());
+function marcarVisto(){pref('visto_'+USER.id,NOVEDADES[0].id);actualizarAviso()}
+function actualizarAviso(){
+  if(!USER)return;
+  const nv=noVistas(),b=$('#nov');$('#manDot').hidden=!nv.length||tab==='manual';
+  if(!nv.length||tab==='manual'){b.hidden=true;return}
+  b.innerHTML=`Novedad${nv.length>1?'es':''}: ${esc(nv[0].titulo)}${nv.length>1?' (+'+(nv.length-1)+' más)':''} <button class="btn" data-go="manual">Ver en el manual</button><button class="btn" id="novX">Entendido</button>`;b.hidden=false;
+}
+function renderManual(){
+  const secs=MAN.filter(m=>m.r===0||(m.r===1&&canAct())||(m.r===2&&isJefe())||(m.r===-1&&!canAct()));
+  $('#manual').innerHTML=`<div class="row"><div><h1>Manual de usuario</h1><p class="lead">Cómo usar la herramienta, según tu usuario (${esc(USER.rol)}). Se actualiza con cada cambio.</p></div><button class="btn" id="manPrint">Imprimir / guardar PDF</button></div>
+   <div class="toc"><button class="btn" data-sec="m-nov">Novedades</button>${secs.map(m=>`<button class="btn" data-sec="${m.id}">${esc(m.t.replace(/^Solo jefe de taller: /,''))}</button>`).join('')}</div>
+   <div class="panel man" id="m-nov"><h2>Novedades</h2>${NOVEDADES.map(n=>`<div class="nvd${manNuevas.has(n.id)?' nuevo':''}"><span class="f">${fmtD(n.fecha)}${manNuevas.has(n.id)?' · NUEVO':''}</span><b>${esc(n.titulo)}</b>${esc(n.texto)} ${secs.some(m=>m.id===n.sec)?`<button class="btn" data-sec="${n.sec}">Ver sección</button>`:''}</div>`).join('')}</div>
+   ${secs.map(m=>`<div class="panel man" id="${m.id}"><h2>${esc(m.t)}</h2>${m.h}</div>`).join('')}`;
+}
+
+/* ================= EVENTOS ================= */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-go],[data-ver],[data-a],[data-copy],[data-sem],#reAg,#cSave,#salir,#bkp,#cpin,#uAdd,[data-upin],[data-uact],#novX,#manPrint,[data-sec],#cierreGo,[data-addhoy]');if(!t)return;
+  if(t.id==='salir'){sess('user',null);location.reload();return}
+  if(t.dataset.go)return go(t.dataset.go);
+  if(t.dataset.ver){casoSel=t.dataset.ver;return go('caso')}
+  if(t.dataset.a){if(t.tagName!=='A')e.preventDefault();return accion(t.dataset.ot,t.dataset.a)}
+  if(t.dataset.copy){const c=S.casos[t.dataset.copy];try{await navigator.clipboard.writeText(mensaje(c));toast('Mensaje copiado')}catch(_){toast('No se pudo copiar: selecciona el texto')}return}
+  if(t.dataset.sem){if(!canAct())return;wr(casoSel,['sem',t.dataset.sem]);return}
+  if(t.dataset.addhoy)return agregarAHoy(t.dataset.addhoy);
+  if(t.id==='novX')return marcarVisto();
+  if(t.id==='cierreGo'){if(isJefe())dlgCierre();return}
+  if(t.id==='manPrint')return window.print();
+  if(t.dataset.sec){const e=document.getElementById(t.dataset.sec);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(t.id==='cpin')return dlgCambiarPin(USER);
+  if(t.id==='uAdd'){if(isJefe())dlgNuevoUsuario();return}
+  if(t.dataset.upin){const u=US.find(x=>x.id===t.dataset.upin);if(u&&(isJefe()||u.id===USER.id))dlgCambiarPin(u);return}
+  if(t.dataset.uact){if(isJefe())alternarAcceso(t.dataset.uact);return}
+  if(t.id==='bkp')return descargarRespaldo();
+  if(t.id==='reAg'){if(canAct())await rehacerAgenda();return}
+  if(t.id==='cSave'){if(!isJefe())return;const v=id=>$('#'+id).value;
+    const cfg={asesor:v('c_asesor')||'Edson',min:Math.max(1,+v('c_min')||2),max:Math.max(1,+v('c_max')||5),meta:+v('c_meta')||0,pct1:+v('c_pct1')||0,pct2:+v('c_pct2')||0,base:v('c_base')};if(cfg.min>cfg.max)cfg.min=cfg.max;
+    try{await setDoc(doc(db,'crm_config','carretera'),cfg,{merge:true});toast('Ajustes guardados · usa “Rehacer agenda” para aplicarlos hoy')}catch(err){toast('No se pudo guardar: '+(err.code||err.message))}return}
+});
+document.addEventListener('change',e=>{if(e.target.id==='fEst'){fEst=e.target.value;renderCartera()}if(e.target.id==='cierreMes'){cierreSel=e.target.value;renderSemana()}});
+document.addEventListener('input',e=>{if(e.target.id==='fBus'){fBus=e.target.value;const p=e.target.selectionStart;renderCartera();const i=$('#fBus');i.focus();i.setSelectionRange(p,p)}});
+$('#ov').addEventListener('click',e=>{if(e.target.id==='ov')closeDlg()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDlg()});
+$('#file').addEventListener('change',e=>{procesarArchivos([...e.target.files]);e.target.value=''});
+const dr=$('#drop');['dragenter','dragover'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.add('over')}));['dragleave','drop'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.remove('over')}));
+dr.addEventListener('drop',e=>{if(canAct())procesarArchivos([...e.dataTransfer.files])});
+window.addEventListener('online',()=>{const b=$('#ban');b.className='ban';b.textContent=BAN_OK});
+window.addEventListener('offline',()=>{const b=$('#ban');b.className='ban err';b.textContent='Sin conexión: los cambios no se guardan hasta que vuelva el internet. No cierres esta pestaña.'});
+setInterval(()=>{const h=gtToday();if(h!==TODAY){TODAY=h;ensureAgenda();scheduleRender()}},60000);
+
+/* ================= ACCESO CON PIN ================= */
+const BAN_OK='Conectado a Firebase · los datos se comparten en tiempo real entre todos los dispositivos';
+async function hashPin(sal,id,pin){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sal+':'+id+':'+pin));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function entrar(u){
+  USER=u;sess('user',u.id);
+  $('#login').hidden=true;
+  $('#hoyFecha').textContent='Lube N Save CAES · '+new Date().toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long',timeZone:'America/Guatemala'});
+  $('#quien').innerHTML=`${esc(u.nombre)} <span>${esc(u.rol)}</span> <button id="cpin">Cambiar PIN</button> <button id="salir">Salir</button>`;
+  document.querySelector('nav button[data-t="importar"]').hidden=!canAct();
+  const b=$('#ban');b.className='ban';b.textContent=BAN_OK;
+  startSync();
+  const t=pref('tab');go(['hoy','cartera','semana','importar'].includes(t)?t:'hoy');
+}
+async function loginUI(){
+  const body=$('#loginBody');
+  try{
+    if(!auth.currentUser)await signInAnonymously(auth);
+    const snap=await getDocs(collection(db,'crm_usuarios'));
+    const us=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    US=us;const sid=sess('user');const prev=sid&&us.find(x=>x.id===sid&&x.activo!==false);
+    if(prev)return entrar(prev);
+    if(!us.filter(x=>x.activo!==false).length){body.innerHTML=`<p><b>Faltan los usuarios.</b></p><p class="sm">El jefe debe ejecutar <code>node tests/seed-usuarios.mjs</code> una vez (ver README).</p>`;return}
+    const act=us.filter(x=>x.activo!==false);let sel=pref('lastUser');if(!act.find(x=>x.id===sel))sel=act[0].id;let fails=0,lock=0;
+    body.innerHTML=`<div class="users" id="lu">${act.map(x=>`<button data-u="${esc(x.id)}" aria-pressed="${x.id===sel}">${esc(x.nombre)}</button>`).join('')}</div>
+     <input id="lpin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" aria-label="PIN">
+     <div class="err" id="lerr"></div><button class="btn k1" id="lgo" style="padding:12px">Entrar</button>`;
+    $('#lu').onclick=e=>{const b=e.target.closest('button');if(!b)return;sel=b.dataset.u;document.querySelectorAll('#lu button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('#lpin').focus()};
+    const go_=async()=>{
+      if(Date.now()<lock){$('#lerr').textContent='Espera unos segundos antes de reintentar.';return}
+      const u=act.find(x=>x.id===sel),pin=$('#lpin').value.trim();
+      if(u&&pin&&await hashPin(u.sal,u.id,pin)===u.pinHash){pref('lastUser',u.id);return entrar(u)}
+      fails++;$('#lpin').value='';$('#lerr').textContent='PIN incorrecto.';if(fails>=5){lock=Date.now()+30000;fails=0;$('#lerr').textContent='Demasiados intentos. Espera 30 segundos.'}
+    };
+    $('#lgo').onclick=go_;$('#lpin').addEventListener('keydown',e=>{if(e.key==='Enter')go_()});$('#lpin').focus();
+  }catch(e){body.innerHTML=`<p><b>No se pudo conectar con Firebase.</b></p><p class="sm">${esc(e.code||e.message)}</p><p class="sm">Si dice <code>admin-restricted-operation</code> o <code>operation-not-allowed</code>, falta activar Authentication → Anónimo en la consola de Firebase.</p>`}
+}
+loginUI();
+</script>
+
+</body></html>
